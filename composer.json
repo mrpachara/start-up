@@ -1,0 +1,22 @@
+{
+    "name": "mrpachara/start-up",
+    "description": "start project",
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/mrpachara/php-lib"
+        }
+    ],
+    "require": {
+        "mrpachara/php-lib": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {"app\\": "include/"}
+    },
+    "authors": [
+        {
+            "name": "Pachara Tinamas",
+            "email": "mrpachara@gmail.com"
+        }
+    ]
+}
