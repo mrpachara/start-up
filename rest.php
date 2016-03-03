@@ -1,26 +1,24 @@
 <?php
-	define('REST', true);
+	require_once 'vendor/autoload.php';
 
-	require_once 'global.inc.php';
-	require_once "include/rest.php";
-	require_once "include/config.php";
-	require_once "{$conf['rest']['path']}oauth2/service/serviceconfigurated.php";
-	//require_once "include/resttoken.php";
-	require_once "include/grantservice.php";
+	require_once 'infra.inc.php';
+
+	require_once 'oauth2-server-config.php';
+
+	define('REST', true);
 
 	ini_set('display_errors', 0);
 
 	header("Access-Control-Allow-Origin: *");
 
-	//$GLOBALS['_resttoken'] = new \sys\RestToken($conf, $GLOBALS['_pdoconfigurated'], new \sys\SystemUserService($GLOBALS['_pdoconfigurated']));
-	$GLOBALS['_grantservice'] = new \sys\GrantService($conf['authoz'], $GLOBALS['_oauth2server']);
+	$GLOBALS['_grantservice'] = new \sys\GrantService($infra['authz'], $GLOBALS['_oauth2server']);
 
 	function rest_error($errno, $errstr, $errfile, $errline){
-		\sys\Rest::response(array(
-			 'errors' => array(
-				new Exception($errfile.':'.$errline.':'.$errstr, $errno)
-			)
-		), null, 500, "Internal Server Error");
+		\sys\Rest::response([
+			'errors' => [
+				new \Exception($errfile.':'.$errline.':'.$errstr, $errno),
+			],
+		], null, 500, "Internal Server Error");
 	}
 
 	function shutdown_handler(){
@@ -39,13 +37,13 @@
 	//if($GLOBALS['_rest']->getService() != 'view') sleep(1);
 	//sleep(1);
 
-	if(($GLOBALS['_rest']->getModule() != null) && (file_exists($conf['rest']['path'].$GLOBALS['_rest']->getModule()."/rest.php"))){
-		require_once $conf['rest']['path'].$GLOBALS['_rest']->getModule()."/rest.php";
+	if(($GLOBALS['_rest']->getModule() != null) && (file_exists($infra['rest']['path'].$GLOBALS['_rest']->getModule()."/rest.php"))){
+		require_once $infra['rest']['path'].$GLOBALS['_rest']->getModule()."/rest.php";
 	} else{
-		$GLOBALS['_rest']->response(array(
-			 'errors' => array(
-				  new Exception('module: '.$GLOBALS['_rest']->getModule()." not found", 400)
-			)
-		), null, 400, 'module: '.$GLOBALS['_rest']->getModule()." not found");
+		$GLOBALS['_rest']->response([
+			'errors' => [
+				new \Exception('module: '.$GLOBALS['_rest']->getModule()." not found", 404),
+			],
+		], null, 404, 'Not Found');
 	}
 ?>

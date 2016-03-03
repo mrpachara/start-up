@@ -1,0 +1,31 @@
+{
+  "name": "start-up",
+  "authors": [
+    "Pachara Tinamas <mrpachara@gmail.com>"
+  ],
+  "description": "startup project",
+  "main": [],
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "angular"
+  ],
+  "license": "N",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "^2.2.0",
+    "angular": "^1.4.9",
+    "angular-material": "^1.0.6",
+    "link-driven": "git://github.com/mrpachara/link-driven.git#master",
+    "angular-d3-chart": "git://github.com/mrpachara/angular-d3-chart.git#master",
+    "less": "^2.6.0"
+  }
+}

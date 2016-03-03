@@ -1,21 +1,28 @@
 <?php
-	$conf  = [];
+	$infra = [];
 
-	$conf['db'] = [
+	$infra['debug'] = [
+		'level' => 3,
+	];
+
+	$infra['db'] = [
 		'dns' => 'pgsql:host=localhost;dbname=erpbase',
+		//'dns' => 'mysql:host=localhost;dbname=erpbase',
 		'username' => 'startup',
 		'password' => '1234',
 		'options' => [
 			\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
 			\PDO::ATTR_EMULATE_PREPARES => false,
-			//\PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
-			//\PDO::ATTR_AUTOCOMMIT => false,
 			\PDO::ATTR_ORACLE_NULLS => \PDO::NULL_EMPTY_STRING,
+
+			// for MySQL
+			//\PDO::ATTR_AUTOCOMMIT => false,
+			//\PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true,
 			//\PDO::MYSQL_ATTR_INIT_COMMAND => "SET NAMES utf8, time_zone = '+00:00'",
 		],
 	];
 
-	$conf['authoz'] = [
+	$infra['authz'] =  [
 		'default' => 'ALL',
 		'superusername' => 'root',
 		'superuserrole' => 'ROOT',
@@ -33,13 +40,8 @@
 		'specialroles' => ['ADMIN'],
 	];
 
-	$conf['rest'] = [
+	$infra['rest'] = [
 		'path' => 'rest-modules/',
 		'base' => 'rest/',
-		'cookiename' => 'RESTTOKEN',
 	];
-
-	$conf['generator'] = [];
-	$conf['generator']['length'] = 4;
-	$conf['generator']['seperator'] = '-';
 ?>
