@@ -7,8 +7,12 @@
 	$data = [
 		'uri' => $GLOBALS['_rest']->getRestUri(),
 		'links' => [
-			['rel' => 'service', 'href' => $GLOBALS['_rest']->getModulePath("data01"), 'alias' => "data01"],
-			['rel' => 'resource', 'href' => $GLOBALS['_rest']->getModulePath("data01-domain"), 'alias' => "data01-domain"],
+			[
+				'rel' => 'module/javascript', 'href' => $GLOBALS['_rest']->getModulePath("javascript/angular-module.js"),
+				'alias' => "angular-module", 'module-id' => "app.start-up",
+			],
+
+			['rel' => 'module', 'href' => $GLOBALS['_rest']->getConfigUri('service01'), 'alias' => "service01"],
 		],
 	];
 ?>

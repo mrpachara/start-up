@@ -4,9 +4,11 @@
 		exit;
 	}
 
-	header("Content-Type: text/plain; charset=UTF-8");
-
 	define("BASEPATH", dirname(APPPATH).'/');
+
+	//header("Content-Type: text/plain; charset=UTF-8");
+
+	//var_dump($_SERVER);
 ?>
 <!DOCTYPE html>
 <html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
@@ -16,7 +18,7 @@
 		<meta http-equiv="Content-Language" content="en_US, th_TH" />
 		<title><?= htmlspecialchars($conf['app']['name']) ?> Application</title>
 
-		<base href="<?= htmlspecialchars(APPPATH) ?>" />
+		<base href="<?= htmlspecialchars(APPPATH.'/') ?>" />
 
 		<link rel="icon" type="image/png" href="../favicon.png" />
 
@@ -27,18 +29,24 @@
 var RESOURCEBASE = <?= json_encode(BASEPATH) ?>;
 var APPCONFIGFILE = RESOURCEBASE  +  <?= json_encode($infra['rest']['base'].$conf['app']['context'].'/configuration') ?>;
 		</script>
+
 		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/bower_components/less/dist/less.js" data-env="development" data-async="true"></script>
 		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/bower_components/jquery/dist/jquery.js"></script>
 
 		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/bower_components/angular/angular.js"></script>
 		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/bower_components/angular-aria/angular-aria.js"></script>
 		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/bower_components/angular-animate/angular-animate.js"></script>
-		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/router.es5.js"></script>
-		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/bower_components/angular-material/angular-material.js"></script>
 		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/bower_components/angular-messages/angular-messages.js"></script>
+		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/bower_components/angular-material/angular-material.js"></script>
+		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/node_modules/@angular/router/angular1/angular_1_router.js"></script>
 
+		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/bower_components/link-driven/angular-core.js"></script>
+		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/bower_components/link-driven/angular-service.js"></script>
+		<!--
 		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/app-helper.js"></script>
 		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/eduservice.js"></script>
+		-->
+		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/app-bootstrap.js"></script>
 	</head>
 	<body ng-controller="AppController as app">
 		<div class="app-ly-app" ng-include="app.layout.url('layout')" style="height: 100%;">
@@ -69,10 +77,11 @@ var APPCONFIGFILE = RESOURCEBASE  +  <?= json_encode($infra['rest']['base'].$con
 				<div>
 <?php include "loading3.php" ?>
 					<div style="height: 0px;">
-						<div style="font-size: large; font-weight: bold; margin-top: 1em;">Loading...</div>
+						<div style="font-size: large; font-weight: bold; margin-top: 1em;">xxxxLoading...</div>
 					</div>
 				</div>
 			</div>
 		</div>
+		<div ng-outlet></div>
 	</body>
 </html>
