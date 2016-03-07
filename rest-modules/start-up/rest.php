@@ -4,7 +4,7 @@
 		exit;
 	}
 
-	define('RESTCONFIGURATED', true);
+	if(!defined('RESTCONFIGURATED')) define('RESTCONFIGURATED', true);
 
 	$service = $GLOBALS['_rest']->getService();
 	$config = new \sys\Config(__DIR__.'/'.\sys\Rest::CONFIG_SERVICE.'.php');

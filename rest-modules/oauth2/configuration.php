@@ -9,10 +9,12 @@
 		'links' => [
 			[
 				'rel' => 'module/javascript', 'href' => $GLOBALS['_rest']->getModulePath("javascript/angular-module.js"),
-				'alias' => "angular-module", 'module-id' => "app.start-up",
+				'alias' => "angular-module", 'module-id' => "oauth2",
 			],
 
-			['rel' => 'module', 'href' => $GLOBALS['_rest']->getConfigUri('service01'), 'alias' => "service01"],
+			['rel' => 'service', 'href' => $GLOBALS['_rest']->getModulePath('token'), 'alias' => "token"],
+			['rel' => 'service', 'href' => $GLOBALS['_rest']->getModulePath('tokeninfo'), 'alias' => "tokeninfo"],
+			['rel' => 'service', 'href' => $GLOBALS['_rest']->getModulePath('jwttoken'), 'alias' => "jwttoken"],
 		],
 	];
 ?>

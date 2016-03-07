@@ -10,47 +10,82 @@
 	angular.module(<?= json_encode($config->linkProp('angular-module', 'module-id')) ?>, [
 		'ldrvn', 'ldrvn.service', 'ngComponentRouter',
 	])
+		.config([
+			function(){
+			}
+		])
+
 		.run([
 			'$rootRouter',
 			function($rootRouter){
-				console.debug('router config');
-				console.debug($rootRouter);
 				$rootRouter.config([
-					{'path': '/data01', 'name': 'Data01 List', 'component': 'data01List'},
-					{'path': '/data01/:id', 'name': 'Data01 Item', 'component': 'data01Item'},
+					{'path': '/service01/data01', 'name': 'Service01 Data01 List', 'component': 'service01Data01List'},
+					{'path': '/service01/data01/:id', 'name': 'Service01 Data01 Item', 'component': 'service01Data01Item'},
 				]);
 			}
 		])
 
-		.component('data01List', {
-			'controller': Data01ListController,
+		.component('service01Data01List', {
+			'controller': Service01Data01ListController,
 			'controllerAs': 'vm',
-			'template': 'Test List',
+			'template': 'Test List<pre>{{ vm|json:true }}</pre>',
 		})
 
-		.component('data01Item', {
-			'controller': Data01ItemController,
+		.component('service01Data01Item', {
+			'controller': Service01Data01ItemController,
 			'controllerAs': 'vm',
 			'template': 'Test Item {{ vm.getId() }}',
 		})
+
+		.factory('service01ConfigLoader', [
+			'$ldrvn',
+			function($ldrvn){
+				return $ldrvn.loadConfig(<?= json_encode($GLOBALS['_rest']->getConfigUri()) ?>);
+			}
+		])
+
+		.factory('service01Data01ListService', [
+			'$q', '$ldrvn', 'service01ConfigLoader',
+			function($q, $ldrvn, service01ConfigLoader){
+				return $ldrvn.createService(service01ConfigLoader, {
+					'load': function(){
+						var service = this;
+						if(angular.isUndefined(service.$$configService)) return $q.reject(new Error('Service not ready'));
+
+						return service.$$configService.$load('data01');
+					},
+				});
+			}
+		])
 	;
 
-	Data01ListController.$inject = [];
-	function Data01ListController(){
+	Service01Data01ListController.$inject = ['service01Data01ListService'];
+	function Service01Data01ListController(){
 		var vm = this;
 		var args = arguments;
 		vm.$$di = {};
-		angular.forEach(Data01ListController.$inject, function(value, key){
+		angular.forEach(Service01Data01ListController.$inject, function(value, key){
 			vm.$$di[value] = args[key];
 		});
 	}
+	angular.extend(Service01Data01ListController.prototype, {
+		'$routerOnActivate': function(){
+			var vm = this;
 
-	Data01ItemController.$inject = [];
-	function Data01ItemController(){
+			return vm.$$di.service01Data01ListService.promise.then(function(service){
+				return service.load().then(function(model){
+					return angular.extend(vm, model);
+				});
+			});
+		},
+	});
+
+	Service01Data01ItemController.$inject = [];
+	function Service01Data01ItemController(){
 		var vm = this;
 		var args = arguments;
 		vm.$$di = {};
-		angular.forEach(Data01ItemController.$inject, function(value, key){
+		angular.forEach(Service01Data01ItemController.$inject, function(value, key){
 			vm.$$di[value] = args[key];
 		});
 
@@ -58,7 +93,7 @@
 			'params': {},
 		};
 	}
-	angular.extend(Data01ItemController.prototype, {
+	angular.extend(Service01Data01ItemController.prototype, {
 		'$routerOnActivate': function(next, previous){
 			var vm = this;
 

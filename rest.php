@@ -5,7 +5,7 @@
 
 	require_once 'oauth2-server-config.php';
 
-	define('REST', true);
+	if(!defined('REST')) define('REST', true);
 
 	ini_set('display_errors', 0);
 
