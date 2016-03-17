@@ -6,6 +6,6 @@
 
 	$GLOBALS['_rest']->setResponseContentType("application/javascript; charset=utf-8");
 	ob_start();
-	include $service.'-resource/'.$GLOBALS['_rest']->getArgument(0).'.php';
+	include __DIR__.'/'.$GLOBALS['_rest']->getArgument(0).'.php';
 	$data = ob_get_clean();
 ?>
