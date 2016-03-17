@@ -1,0 +1,19 @@
+._p(@prop, @value) {
+	-webkit-@{prop}: @value;
+	-ms-@{prop}: @value;
+	-o-@{prop}: @value;
+	@{prop}: @value;
+}
+
+._v(@prop, @value) {
+	@{prop}: ~"-webkit-@{value}";
+	@{prop}: ~"-ms-@{value}";
+	@{prop}: ~"-o-@{value}";
+	@{prop}: @value;
+}
+
+/* BUG: angular-material set margin-bottom to -1 when disabled */
+md-input-container .md-input[disabled],
+[disabled] md-input-container .md-input{
+	margin-bottom: 0px !important;
+}

@@ -7,8 +7,6 @@
 	define("BASEPATH", dirname(APPPATH).'/');
 
 	//header("Content-Type: text/plain; charset=UTF-8");
-
-	//var_dump($_SERVER);
 ?>
 <!DOCTYPE html>
 <html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
@@ -24,6 +22,7 @@
 
 		<link rel="stylesheet" type="text/css" href="<?= htmlspecialchars(BASEPATH) ?>js/lib/bower_components/angular-material/angular-material.css" />
 		<link rel="stylesheet/less" type="text/css" href="<?= htmlspecialchars(BASEPATH) ?>css/less/app.less" />
+		<link rel="stylesheet/less" type="text/css" href="<?= htmlspecialchars(BASEPATH) ?>css/less/app-fixed.less" />
 
 		<script type="application/javascript">
 var RESOURCEBASE = <?= json_encode(BASEPATH) ?>;
@@ -37,6 +36,7 @@ var APPCONFIGFILE = RESOURCEBASE  +  <?= json_encode($infra['rest']['base'].$con
 		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/bower_components/angular-aria/angular-aria.js"></script>
 		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/bower_components/angular-animate/angular-animate.js"></script>
 		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/bower_components/angular-messages/angular-messages.js"></script>
+		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/bower_components/angular-sanitize/angular-sanitize.js"></script>
 		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/bower_components/angular-material/angular-material.js"></script>
 		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/node_modules/@angular/router/angular1/angular_1_router.js"></script>
 
@@ -46,7 +46,7 @@ var APPCONFIGFILE = RESOURCEBASE  +  <?= json_encode($infra['rest']['base'].$con
 		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/app-bootstrap.js"></script>
 	</head>
 	<body ng-controller="AppController as app">
-		<div class="app-ly-app" ng-include="app.layout.url('layout')" style="height: 100%;">
+		<div class="app-ly-app" ng-include="app.layout()" style="height: 100%;">
 			<div id="app-cp-loading" class="app-ly-app" style="height: 100%;">
 				<style type="text/css" scoped="scoped" style="display: none !important;">
 #app-cp-loading {

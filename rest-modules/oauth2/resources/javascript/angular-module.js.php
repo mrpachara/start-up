@@ -17,24 +17,12 @@
 			}
 		])
 
-		.run([
-			'$rootRouter',
-			function($rootRouter){
-				/*
-				$rootRouter.config([
-					{'path': '/oauth2/token', 'name': 'OAuth2 Token', 'component': 'oauth2token'},
-					{'path': '/oauth2/tokeninfo', 'name': 'OAuth2 Info', 'component': 'oauth2tokeninfo'},
-					{'path': '/oauth2/jwttoken', 'name': 'OAuth2 JWT Token', 'component': 'oauth2jwttoken'},
-				]);
-				*/
-			}
-		])
-
-		.provider('oauth2ServiceProvider', [
+		.provider('oauth2Service', [
 			function(){
 				var local = {
 					'client': {},
 					'storage': null,
+					'tokenHandler': null,
 				};
 
 				var storageInjector = [function(){
@@ -62,7 +50,9 @@
 					};
 				}];
 
-				var provider = {
+				var provider = this;
+
+				angular.extend(provider, {
 					'setClient': function(client){
 						angular.extend(local.client, client);
 
@@ -74,14 +64,12 @@
 						return provider;
 					},
 					'$get': [
-						'$q', '$injector', '$ldrvn', 'service01ConfigLoader',
-						function($q, $ldrvn, service01ConfigLoader){
+						'$q', '$injector', '$ldrvn', 'oauth2ConfigLoader',
+						function($q, $injector, $ldrvn, oauth2ConfigLoader){
 							local.storage = $injector.invoke(storageInjector, GLOBALOBJECT);
 
-							return $ldrvn.createService(service01ConfigLoader, {
+							return $ldrvn.createService(oauth2ConfigLoader, {
 								'token': function(data, config){
-									var service = this;
-									if(angular.isUndefined(service.$$configService)) return $q.reject(new Error('Service is not ready'));
 									if(angular.isUndefined(local.client.client_id)) return $q.reject(new Error('Client is not defined'));
 
 									config = config || {};
@@ -90,62 +78,65 @@
 									config.headers['Authorization'] = 'Basic ' + btoa(local.client.client_id + ':' + ((local.client.secret)? local.client.secret : ''));
 									angular.extend(data, local.client);
 
-									return service.$$configService.$send('token', data, config).then(function(model){
-										angular.forEach(model, function(value, key){
-											if(key === 'expires_in'){
-												local.storage.prop('expires', Date.now() + ((data.expires_in - 60) * 1000));
-											} else{
-												local.storage.prop(key, value);
-											}
-										});
+									return local.tokenHandler = this.promise.then(function(service){
+										service.$$configService.$send('token', data, config)
+											.then(
+												function(model){
+													angular.forEach(model, function(value, key){
+														if(key === 'expires_in'){
+															local.storage.prop('expires', Date.now() + ((value - 60) * 1000));
+														} else{
+															local.storage.prop(key, value);
+														}
+													});
 
-										return model;
+													return model;
+												},
+												function(model){
+													local.storage.clear();
+													return $q.reject(model);
+												}
+											)
+										;
 									});
 								},
 								'info': function(data){
-									var service = this;
-									if(angular.isUndefined(service.$$configService)) return $q.reject(new Error('Service is not ready'));
-
-									return service.$$configService.$load('tokeninfo');
+									return this.promise.then(function(service){
+										return service.$$configService.$load('tokeninfo');
+									});
 								},
 								'preRequest': function(config){
 									var service = this;
-									if(angular.isUndefined(service.$$configService)) return config;
 									if(config._bypassToken) return config;
 
-									if(angular.isDefined(local.storage.prop('access_token')) && (parseInt(local.storage.prop('expires')) > Date.now())){
-										if(angular.isUndefined(config.headers)) config.headers = {};
-										config.headers['Authorization'] = local.storage.prop('token_type') + ' ' + local.storage.prop('access_token');
-
-										return config;
-									} else{
-										local.storage.remove('access_token');
-										local.storage.remove('expires');
-									}
-
-									if(angular.isDefined(local.storage.prop('refresh_token'))){
-										return service.token({
-											'grant_type': 'refresh_token',
-											'refresh_token': local.storage.prop('refresh_token'),
-										}).then(
+									return $q.when(local.tokenHandler)
+										.then(function(){
+											if(!(parseInt(local.storage.prop('expires')) > Date.now()) && local.storage.prop('refresh_token')){
+												return service.token({
+													'grant_type': 'refresh_token',
+													'refresh_token': local.storage.prop('refresh_token'),
+												});
+											}
+										})
+										.then(
 											function(){
+												if(local.storage.prop('access_token')){
+													if(angular.isUndefined(config.headers)) config.headers = {};
+													config.headers['Authorization'] = local.storage.prop('token_type') + ' ' + local.storage.prop('access_token');
+												}
+
 												return config;
 											},
 											function(){
-												local.storage.clear();
 												return config;
 											}
-										);
-									}
-
-									return config;
+										)
+									;
 								},
 							});
 						}
 					],
-				};
-
-				return provider;
+				});
 			}
 		])
 

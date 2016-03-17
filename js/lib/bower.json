@@ -22,7 +22,8 @@
   ],
   "dependencies": {
     "jquery": "^2.2.0",
-    "angular": "^1.4.9",
+    "angular": "^1.5.1",
+    "angular-sanitize": "^1.5.1",
     "angular-material": "^1.0.6",
     "link-driven": "git://github.com/mrpachara/link-driven.git#master",
     "angular-d3-chart": "git://github.com/mrpachara/angular-d3-chart.git#master",

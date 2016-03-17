@@ -10,17 +10,5 @@
 	angular.module(<?= json_encode($config->linkProp('angular-module', 'module-id')) ?>, [
 		'ldrvn', 'ldrvn.service', 'ngComponentRouter',
 	])
-		.config([
-			'$locationProvider',
-			function($locationProvider){
-				$locationProvider.html5Mode(true);
-			}
-		])
-
-		.run([
-			'$rootRouter',
-			function($rootRouter){
-			}
-		])
 	;
 })(this, this.angular);

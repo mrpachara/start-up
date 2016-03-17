@@ -9,13 +9,21 @@
 
 	angular.module(<?= json_encode($config->linkProp('angular-self', 'module-id')) ?>, [
 		'ldrvn', 'ldrvn.service', 'ngComponentRouter',
+		'ngMessages', 'ngSanitize', 'ngMaterial',
+		'start-up',
 	])
+		.config([
+			'$locationProvider',
+			function($locationProvider){
+				$locationProvider.html5Mode(true);
+			}
+		])
+
 		.controller('AppController', AppController)
 	;
 
 	AppController.$inject= [];
 	function AppController(){
-console.debug('start-up App');
 		var vm = this;
 		var args = arguments;
 		vm.$$di = {};
