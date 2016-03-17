@@ -42,10 +42,7 @@ var APPCONFIGFILE = RESOURCEBASE  +  <?= json_encode($infra['rest']['base'].$con
 
 		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/bower_components/link-driven/angular-core.js"></script>
 		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/bower_components/link-driven/angular-service.js"></script>
-		<!--
-		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/app-helper.js"></script>
-		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/eduservice.js"></script>
-		-->
+
 		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/app-bootstrap.js"></script>
 	</head>
 	<body ng-controller="AppController as app">
@@ -77,11 +74,10 @@ var APPCONFIGFILE = RESOURCEBASE  +  <?= json_encode($infra['rest']['base'].$con
 				<div>
 <?php include "loading3.php" ?>
 					<div style="height: 0px;">
-						<div style="font-size: large; font-weight: bold; margin-top: 1em;">xxxxLoading...</div>
+						<div style="font-size: large; font-weight: bold; margin-top: 1em;">Loading...</div>
 					</div>
 				</div>
 			</div>
 		</div>
-		<div ng-outlet></div>
 	</body>
 </html>

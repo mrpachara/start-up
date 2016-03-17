@@ -9,7 +9,7 @@
 	$data['links'] = array_merge($data['links'], [
 		[
 			'rel' => 'module/javascript', 'href' => $GLOBALS['_rest']->getModulePath("javascript/angular-module.js"),
-			'alias' => "angular-module", 'module-id' => "app.service01",
+			'alias' => "angular-module", 'module-id' => "service01",
 		],
 	]);
 ?>

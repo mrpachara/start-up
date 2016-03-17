@@ -11,11 +11,11 @@
 	;
 
 	angular.injector(['app.bootstrap'], true).invoke([
-		'$document', 'moduleService',
-		function($document, moduleService){
+		'$log', '$document', 'moduleService',
+		function($log, $document, moduleService){
 			moduleService.appendScripts().then(
 				function(moduleIds){
-					console.debug(moduleIds);
+					$log.info('loaded modules:', moduleIds);
 					var document = $document[0];
 					angular.element(document).ready(function(){
 						angular.bootstrap(document, moduleIds, {strictDi: true});

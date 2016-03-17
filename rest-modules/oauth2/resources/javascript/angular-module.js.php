@@ -157,11 +157,17 @@
 		])
 
 		.factory('oauth2HttpInterceptor', [
-			'oauth2Service',
-			function(oauth2Service){
+			'$log', '$injector',
+			function($log, $injector){
 				return {
 					'request': function(config){
-						return oauth2Service.preRequest(config);
+						try{
+							var oauth2Service = $injector.get('oauth2Service');
+							return oauth2Service.preRequest(config);
+						} catch(excp){
+							$log.error(excp);
+							return config;
+						}
 					},
 				};
 			}

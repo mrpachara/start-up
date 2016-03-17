@@ -22,17 +22,5 @@
 			function($rootRouter){
 			}
 		])
-
-		.controller('AppController', AppController)
 	;
-
-	AppController.$inject= [];
-	function AppController(){
-		var vm = this;
-		var args = arguments;
-		vm.$$di = {};
-		angular.forEach(AppController.$inject, function(value, key){
-			vm.$$di[value] = args[key];
-		});
-	}
 })(this, this.angular);
