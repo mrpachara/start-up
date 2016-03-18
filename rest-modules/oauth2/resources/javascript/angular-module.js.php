@@ -79,7 +79,7 @@
 									angular.extend(data, local.client);
 
 									return local.tokenHandler = this.promise.then(function(service){
-										service.$$configService.$send('token', data, config)
+										return service.$$configService.$send('token', data, config)
 											.then(
 												function(model){
 													angular.forEach(model, function(value, key){
