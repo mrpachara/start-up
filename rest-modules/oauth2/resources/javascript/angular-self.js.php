@@ -76,7 +76,7 @@
 		.controller('AppController', AppController)
 	;
 
-	AppController.$inject= [];
+	AppController.$inject= ['oauth2Service'];
 	function AppController(){
 		var vm = this;
 		var args = arguments;
@@ -87,7 +87,7 @@
 	}
 	angular.extend(AppController.prototype, {
 		'layout': function(){
-			return <?= json_encode($config->linkProp('layout', 'href')) ?>;
+			return this.$$di.oauth2Service.layout('layout');
 		}
 	});
 
