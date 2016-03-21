@@ -5,7 +5,7 @@
 	}
 ?>
 <div layout="row" flex class="app-ly-app" style="height: 100%;">
-	<md-sidenav md-component-id="app-cp-side-nav" md-is-locked-open="true"
+	<md-sidenav md-component-id="app-cp-side-nav" md-is-locked-open="app.$mdMedia('gt-md')"
 		class="md-sidenav-left md-whiteframe-z2" layout="column">
 		<!-- ng-controller="SidenavController as sidenav" -->
 		<aside id="app-cp-side-nav"

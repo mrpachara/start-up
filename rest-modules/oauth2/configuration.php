@@ -21,6 +21,8 @@
 
 			['rel' => 'template', 'href' => $GLOBALS['_rest']->getModulePath('html/login.html'), 'alias' => "login-form"],
 
+			['rel' => 'page', 'href' => $GLOBALS['_rest']->getRestPath('../oauth2/login'), 'alias' => "login-page"],
+
 			['rel' => 'service', 'href' => $GLOBALS['_rest']->getModulePath('token'), 'alias' => "token"],
 			['rel' => 'service', 'href' => $GLOBALS['_rest']->getModulePath('tokeninfo'), 'alias' => "tokeninfo"],
 			['rel' => 'service', 'href' => $GLOBALS['_rest']->getModulePath('jwttoken'), 'alias' => "jwttoken"],

@@ -100,9 +100,14 @@
 										;
 									});
 								},
-								'info': function(data){
+								'info': function(){
 									return this.promise.then(function(service){
 										return service.$$configService.$load('tokeninfo');
+									});
+								},
+								'loginPage': function(data){
+									return this.promise.then(function(service){
+										return service.$$configService.$link('login-page').href;
 									});
 								},
 								'preRequest': function(config){

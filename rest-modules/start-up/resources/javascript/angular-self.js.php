@@ -10,7 +10,7 @@
 	angular.module(<?= json_encode($config->linkProp('angular-self', 'module-id')) ?>, [
 		'ldrvn', 'ldrvn.service', 'ngComponentRouter',
 		'ngMessages', 'ngSanitize', 'ngMaterial',
-		'start-up',
+		'util', 'oauth2', 'start-up',
 	])
 		.config([
 			'$locationProvider', 'oauth2ServiceProvider',
@@ -64,7 +64,11 @@
 		.controller('AppController', AppController)
 	;
 
-	AppController.$inject= ['$mdMedia', '$mdSidenav', 'startUpService'];
+	AppController.$inject= [
+		'$log', '$window',
+		'$mdMedia', '$mdSidenav',
+		'startUpService', 'oauth2Service',
+	];
 	function AppController(){
 		var vm = this;
 		var args = arguments;
@@ -73,12 +77,28 @@
 			vm.$$di[value] = args[key];
 		});
 
+		vm.$$local = {
+			'user': null,
+		};
+
 		vm.$mdMedia = vm.$$di.$mdMedia;
 		vm.$mdSidenav = vm.$$di.$mdSidenav;
+		vm.$$di.oauth2Service.info().then(
+			function(data){
+				vm.$$local.user = data;
+			},
+			function(data){
+				vm.$$di.$log.info('user info:', data);
+				vm.$$di.oauth2Service.loginPage().then(function(href){
+console.debug(vm.$$di.$window);
+					vm.$$di.$window.location.href = href;
+				});
+			}
+		);
 	}
 	angular.extend(AppController.prototype, {
 		'layout': function(){
-			return this.$$di.startUpService.layout('layout');
+			return (this.$$local.user)? this.$$di.startUpService.layout('layout') : null;
 		}
 	});
 })(this, this.angular);
