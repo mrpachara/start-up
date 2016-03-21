@@ -10,5 +10,21 @@
 	angular.module(<?= json_encode($config->linkProp('angular-module', 'module-id')) ?>, [
 		'ldrvn', 'ldrvn.service', 'ngComponentRouter',
 	])
+		.factory('startUpConfigLoader', [
+			'$ldrvn',
+			function($ldrvn){
+				return $ldrvn.loadConfig(<?= json_encode($GLOBALS['_rest']->getConfigUri()) ?>);
+			}
+		])
+
+		.factory('startUpService', [
+			'$ldrvn',
+			'startUpConfigLoader',
+			function($ldrvn, startUpConfigLoader){
+				return $ldrvn.createService(startUpConfigLoader, {
+
+				});
+			}
+		])
 	;
 })(this, this.angular);

@@ -9,7 +9,7 @@
 	//header("Content-Type: text/plain; charset=UTF-8");
 ?>
 <!DOCTYPE html>
-<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" ng-controller="AppController as app">
 	<head>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 		<meta charset="UTF-8" />
@@ -45,10 +45,9 @@ var APPCONFIGFILE = RESOURCEBASE  +  <?= json_encode($infra['rest']['base'].$con
 
 		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/app-bootstrap.js"></script>
 	</head>
-	<body ng-controller="AppController as app">
-		<div class="app-ly-app" ng-include="app.layout()" style="height: 100%;">
-			<div id="app-cp-loading" class="app-ly-app" style="height: 100%;">
-				<style type="text/css" scoped="scoped" style="display: none !important;">
+	<body ng-include="app.layout()">
+		<div id="app-cp-loading" class="app-ly-app" style="height: 100%;">
+			<style type="text/css" scoped="scoped" style="display: none !important;">
 #app-cp-loading {
 	display: -webkit-flex;
 	display: -ms-flex;
@@ -70,12 +69,11 @@ var APPCONFIGFILE = RESOURCEBASE  +  <?= json_encode($infra['rest']['base'].$con
 	-o-justify-content: space-around;
 	justify-content: space-around;
 }
-				</style>
-				<div>
+			</style>
+			<div>
 <?php include "loading3.php" ?>
-					<div style="height: 0px;">
-						<div style="font-size: large; font-weight: bold; margin-top: 1em;">Loading...</div>
-					</div>
+				<div style="height: 0px;">
+					<div style="font-size: large; font-weight: bold; margin-top: 1em;">Loading...</div>
 				</div>
 			</div>
 		</div>

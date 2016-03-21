@@ -24,6 +24,8 @@
 			['rel' => 'service', 'href' => $GLOBALS['_rest']->getModulePath('token'), 'alias' => "token"],
 			['rel' => 'service', 'href' => $GLOBALS['_rest']->getModulePath('tokeninfo'), 'alias' => "tokeninfo"],
 			['rel' => 'service', 'href' => $GLOBALS['_rest']->getModulePath('jwttoken'), 'alias' => "jwttoken"],
+
+			['rel' => 'module', 'href' => $GLOBALS['_rest']->getConfigUri('util'), 'alias' => "util"],
 		],
 	];
 ?>

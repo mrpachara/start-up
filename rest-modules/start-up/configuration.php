@@ -17,6 +17,10 @@
 				'alias' => "angular-module", 'module-id' => "start-up",
 			],
 
+			['rel' => 'layout', 'href' => $GLOBALS['_rest']->getModulePath('html/layout.html'), 'alias' => "layout"],
+
+			['rel' => 'module', 'href' => $GLOBALS['_rest']->getConfigUri('util'), 'alias' => "util"],
+			['rel' => 'module', 'href' => $GLOBALS['_rest']->getConfigUri('oauth2'), 'alias' => "oauth2"],
 			['rel' => 'module', 'href' => $GLOBALS['_rest']->getConfigUri('service01'), 'alias' => "service01"],
 		],
 	];

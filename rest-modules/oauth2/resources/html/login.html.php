@@ -29,7 +29,8 @@
 					</div>
 				</md-input-container>
 				<md-button type="submit" class="md-primary">
-					<span>Login</span>
+					<md-icon md-svg-icon="action:ic-exit-to-app" alt="sign in"></md-icon>
+					<span>Sign-in</span>
 				</md-button>
 			</div>
 		</fieldset>
