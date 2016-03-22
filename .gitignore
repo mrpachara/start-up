@@ -2,5 +2,3 @@
 composer.lock
 /js/lib/bower_components
 /js/lib/node_modules
-/rest-modules/util/resources/bower_components
-/rest-modules/util/resources/node_modules
