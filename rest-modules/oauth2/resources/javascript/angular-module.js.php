@@ -74,9 +74,17 @@
 						function($q, $injector, $ldrvn, oauth2ConfigLoader){
 							local.storage = $injector.invoke(storageInjector, GLOBALOBJECT);
 
+							function refreshToken(service){
+								if(!(parseInt(local.storage.prop('expires')) > Date.now()) && local.storage.prop('refresh_token')){
+									return service.token({
+										'grant_type': 'refresh_token',
+										'refresh_token': local.storage.prop('refresh_token'),
+									});
+								}
+							}
+
 							return $ldrvn.createService(oauth2ConfigLoader, {
 								'token': function(data, config){
-console.debug('token', data);
 									if(angular.isUndefined(local.client.client_id)) return $q.reject(new Error('Client is not defined'));
 
 									config = config || {};
@@ -84,7 +92,7 @@ console.debug('token', data);
 									config._bypassToken = true;
 									config.headers['Authorization'] = 'Basic ' + btoa(local.client.client_id + ':' + ((local.client.secret)? local.client.secret : ''));
 									//angular.extend(data, local.client);
-console.debug('start request');
+
 									return local.tokenHandler = this.promise.then(function(service){
 										return service.$$configService.$send('token', data, config)
 											.then(
@@ -121,19 +129,10 @@ console.debug('start request');
 								},
 								'preRequest': function(config){
 									var service = this;
-									if(config._bypassToken) return config;
-console.debug('tokenHandler', local.tokenHandler);
-									return $q.when(local.tokenHandler)
-										.then(function(){
-console.debug('after heander');
-											if(!(parseInt(local.storage.prop('expires')) > Date.now()) && local.storage.prop('refresh_token')){
-console.debug('refresh_token', config);
-												return service.token({
-													'grant_type': 'refresh_token',
-													'refresh_token': local.storage.prop('refresh_token'),
-												});
-											}
-										})
+
+									if(config._bypassToken || config._public) return config;
+
+									return ((local.tokenHandler !== null)? local.tokenHandler.then(function(){return service}).then(refreshToken) : $q.when(refreshToken(service)))
 										.then(
 											function(){
 												if(local.storage.prop('access_token')){
