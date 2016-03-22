@@ -8,10 +8,39 @@
 		'uri' => $GLOBALS['_rest']->getConfigUri(),
 		'links' => [
 			[
+				'rel' => 'stylesheet', 'href' => $GLOBALS['_rest']->getModulePath("bower_components/angular-material/angular-material.css"),
+				'alias' => "angular-material-css",
+			],
+
+			[
 				'rel' => 'self/javascript', 'href' => $GLOBALS['_rest']->getModulePath("javascript/angular-self.js"),
 				'alias' => "angular-self", 'module-id' => "util.app",
 			],
 
+			[
+				'rel' => 'module/javascript', 'href' => $GLOBALS['_rest']->getModulePath("bower_components/angular-aria/angular-aria.js"),
+				'alias' => "angular-aria", 'module-id' => "ngAria",
+			],
+			[
+				'rel' => 'module/javascript', 'href' => $GLOBALS['_rest']->getModulePath("bower_components/angular-animate/angular-animate.js"),
+				'alias' => "angular-animate", 'module-id' => "ngAnimate",
+			],
+			[
+				'rel' => 'module/javascript', 'href' => $GLOBALS['_rest']->getModulePath("bower_components/angular-messages/angular-messages.js"),
+				'alias' => "angular-messages", 'module-id' => "ngMessages",
+			],
+			[
+				'rel' => 'module/javascript', 'href' => $GLOBALS['_rest']->getModulePath("bower_components/angular-sanitize/angular-sanitize.js"),
+				'alias' => "angular-sanitize", 'module-id' => "ngSanitize",
+			],
+			[
+				'rel' => 'module/javascript', 'href' => $GLOBALS['_rest']->getModulePath("bower_components/angular-material/angular-material.js"),
+				'alias' => "angular-material", 'module-id' => "ngMaterial",
+			],
+			[
+				'rel' => 'module/javascript', 'href' => $GLOBALS['_rest']->getModulePath("node_modules/@angular/router/angular1/angular_1_router.js"),
+				'alias' => "angular-component-router", 'module-id' => "ngComponentRouter",
+			],
 			[
 				'rel' => 'module/javascript', 'href' => $GLOBALS['_rest']->getModulePath("javascript/angular-module.js"),
 				'alias' => "angular-module", 'module-id' => "util",

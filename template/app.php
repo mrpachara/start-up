@@ -20,7 +20,6 @@
 
 		<link rel="icon" type="image/png" href="../favicon.png" />
 
-		<link rel="stylesheet" type="text/css" href="<?= htmlspecialchars(BASEPATH) ?>js/lib/bower_components/angular-material/angular-material.css" />
 		<link rel="stylesheet/less" type="text/css" href="<?= htmlspecialchars(BASEPATH) ?>css/less/app.less" />
 		<link rel="stylesheet/less" type="text/css" href="<?= htmlspecialchars(BASEPATH) ?>css/less/app-fixed.less" />
 
@@ -33,12 +32,6 @@ var APPCONFIGFILE = RESOURCEBASE  +  <?= json_encode($infra['rest']['base'].$con
 		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/bower_components/jquery/dist/jquery.js"></script>
 
 		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/bower_components/angular/angular.js"></script>
-		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/bower_components/angular-aria/angular-aria.js"></script>
-		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/bower_components/angular-animate/angular-animate.js"></script>
-		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/bower_components/angular-messages/angular-messages.js"></script>
-		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/bower_components/angular-sanitize/angular-sanitize.js"></script>
-		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/bower_components/angular-material/angular-material.js"></script>
-		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/node_modules/@angular/router/angular1/angular_1_router.js"></script>
 
 		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/bower_components/link-driven/angular-core.js"></script>
 		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/bower_components/link-driven/angular-service.js"></script>

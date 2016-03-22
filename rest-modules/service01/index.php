@@ -14,12 +14,12 @@
 		if($service == \sys\Rest::CONFIG_SERVICE){
 			include $service.'.php';
 		}else if(is_dir(__DIR__.'/resources/'.$service)){
+			$filename = __DIR__.'/resources/'.$service.'/'.implode('/', $GLOBALS['_rest']->getArguments());
 			if(file_exists(__DIR__.'/resources/'.$service.'/'.'index.php')){
 				require_once __DIR__.'/resources/'.$service.'/'.'index.php';
-			} else if(file_exists(__DIR__.'/resources/'.$service.'/'.$GLOBALS['_rest']->getArgument(0))){
-				$filename = __DIR__.'/resources/'.$service.'/'.$GLOBALS['_rest']->getArgument(0);
+			} else if(file_exists($filename)){
 				$data = fopen($filename, 'rb');
-				$GLOBALS['_rest']->setResponseContentType(mime_content_type($filename));
+				$GLOBALS['_rest']->setResponseContentType($GLOBALS['_rest']->mime_type($filename));
 			} else{
 				throw new \sys\HttpNotFoundException();
 			}

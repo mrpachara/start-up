@@ -7,6 +7,8 @@
 (function(GLOBALOBJECT, angular){
 	'use strict';
 
+	angular.element('head').append('<link rel="stylesheet" type="text/css" href="<?= htmlspecialchars($config->linkProp('angular-material-css', 'href')) ?>" />')
+
 	var $iconSetNames = [];
 
 	angular.module(<?= json_encode($config->linkProp('angular-module', 'module-id')) ?>, [
@@ -16,10 +18,10 @@
 		.constant('iconLinks', <?= json_encode($config->links('icon/svg')) ?>)
 
 		.config([
-			'$provide',
+			'$provide', '$httpProvider',
 			'$mdIconProvider',
 			'iconLinks',
-			function($provide, $mdIconProvider, iconLinks){
+			function($provide, $httpProvider, $mdIconProvider, iconLinks){
 				angular.forEach(iconLinks, function(link){
 					$iconSetNames.push(link['set-name']);
 					$mdIconProvider.iconSet(link['set-name'], link.href);
@@ -41,6 +43,8 @@
 						}
 					}
 				]);
+
+				$httpProvider.interceptors.push('utilHttpInterceptor');
 			}
 		])
 
@@ -50,6 +54,48 @@
 				angular.forEach(iconLinks, function(link) {
 					$http.get(link.href, {cache: $templateCache});
 				});
+			}
+		])
+
+		.factory('utilHttpInterceptor', [
+			'$injector',
+			function($injector){
+				var service;
+				return service = {
+					'response': function(response){
+						try{
+							var $mdToast = $injector.get('$mdToast');
+							if(angular.isDefined(response.data) && (response.data !== null) && angular.isDefined(response.data.info)){
+								$mdToast.showSimple(message);
+							}
+						} catch(excp){}
+
+						return response;
+					},
+					'responseError': function(reject){
+						try{
+							var
+								$q = $injector.get('$q'),
+								$mdToast = $injector.get('$mdToast')
+							;
+
+							var message;
+							if(reject instanceof Error){
+								message = reject.message;
+							} else if(angular.isDefined(reject.data) && (reject.data !== null) && angular.isDefined(reject.data.error_description)){
+								message = reject.data.error_description;
+							} else if(angular.isDefined(reject.statusText)){
+								message = reject.statusText;
+							} else{
+								message = reject;
+							}
+
+							$mdToast.showSimple(message);
+						} catch($excp){}
+
+						return $q.reject(reject);
+					},
+				};
 			}
 		])
 	;

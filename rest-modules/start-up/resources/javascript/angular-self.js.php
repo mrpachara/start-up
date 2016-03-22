@@ -89,9 +89,8 @@
 			},
 			function(data){
 				vm.$$di.$log.info('user info:', data);
-				vm.$$di.oauth2Service.loginPage().then(function(href){
-console.debug(vm.$$di.$window);
-					vm.$$di.$window.location.href = href;
+				vm.$$di.oauth2Service.promise.then(function(service){
+					vm.$$di.$window.location.href = service.loginPageUrl() + '?redirect_uri=' + encodeURIComponent(vm.$$di.$window.location.href);
 				});
 			}
 		);

@@ -17,6 +17,12 @@
 			}
 		])
 
+		.run([
+			function(){
+
+			}
+		])
+
 		.provider('oauth2Service', [
 			function(){
 				var local = {
@@ -70,14 +76,15 @@
 
 							return $ldrvn.createService(oauth2ConfigLoader, {
 								'token': function(data, config){
+console.debug('token', data);
 									if(angular.isUndefined(local.client.client_id)) return $q.reject(new Error('Client is not defined'));
 
 									config = config || {};
 									if(angular.isUndefined(config.headers)) config.headers = {};
 									config._bypassToken = true;
 									config.headers['Authorization'] = 'Basic ' + btoa(local.client.client_id + ':' + ((local.client.secret)? local.client.secret : ''));
-									angular.extend(data, local.client);
-
+									//angular.extend(data, local.client);
+console.debug('start request');
 									return local.tokenHandler = this.promise.then(function(service){
 										return service.$$configService.$send('token', data, config)
 											.then(
@@ -105,18 +112,22 @@
 										return service.$$configService.$load('tokeninfo');
 									});
 								},
-								'loginPage': function(data){
-									return this.promise.then(function(service){
-										return service.$$configService.$link('login-page').href;
-									});
+								'loginPageUrl': function(data){
+									var service = this;
+
+									if(angular.isUndefined(service.$$configService)) return null;
+
+									return service.$$configService.$link('login-page').href;
 								},
 								'preRequest': function(config){
 									var service = this;
 									if(config._bypassToken) return config;
-
+console.debug('tokenHandler', local.tokenHandler);
 									return $q.when(local.tokenHandler)
 										.then(function(){
+console.debug('after heander');
 											if(!(parseInt(local.storage.prop('expires')) > Date.now()) && local.storage.prop('refresh_token')){
+console.debug('refresh_token', config);
 												return service.token({
 													'grant_type': 'refresh_token',
 													'refresh_token': local.storage.prop('refresh_token'),

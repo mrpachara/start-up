@@ -91,7 +91,7 @@
 		}
 	});
 
-	Oauth2LoginController.$inject = ['oauth2Service'];
+	Oauth2LoginController.$inject = ['$window', '$location', 'oauth2Service'];
 	function Oauth2LoginController(){
 		var vm = this;
 		var args = arguments;
@@ -121,10 +121,10 @@
 				service.token(vm.model)
 					.then(
 						function(data){
-							console.debug('success', data);
+							vm.$$di.$window.location.href = vm.$$di.$location.search().redirect_uri;
 						},
 						function(data){
-							console.debug('error', data);
+							vm.model.password = null;
 						}
 					)
 					.finally(function(){
