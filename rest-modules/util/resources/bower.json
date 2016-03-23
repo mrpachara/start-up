@@ -21,6 +21,10 @@
     "tests"
   ],
   "dependencies": {
+    "jquery": "^2.2.0",
+    "less": "^2.6.0",
+    "angular": "^1.5.1",
+    "link-driven": "git://github.com/mrpachara/link-driven.git#master",
     "angular-sanitize": "^1.5.1",
     "angular-material": "^1.0.6",
     "angular-d3-chart": "git://github.com/mrpachara/angular-d3-chart.git#master"

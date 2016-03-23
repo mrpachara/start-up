@@ -91,7 +91,11 @@
 		}
 	});
 
-	Oauth2LoginController.$inject = ['$window', '$location', 'oauth2Service'];
+	Oauth2LoginController.$inject = [
+		'$window', '$location', '$q',
+		'util',
+		'oauth2Service',
+	];
 	function Oauth2LoginController(){
 		var vm = this;
 		var args = arguments;
@@ -101,7 +105,7 @@
 		});
 
 		vm.$$local = {
-			'isProgressing': false,
+			'progress': vm.$$di.util.createProgress(),
 		};
 
 		vm.model = {
@@ -109,14 +113,15 @@
 		};
 	}
 	angular.extend(Oauth2LoginController.prototype, {
-		'isProgressing': function(){
-			var vm = this;
-			return vm.$$local.isProgressing;
+		'progress': function(){
+			return this.$$local.progress.count();
 		},
 		'submit': function(){
 			var vm = this;
 
-			vm.$$local.isProgressing = true;
+			var defer = vm.$$di.$q.defer();
+			vm.$$local.progress.process(defer.promise);
+
 			vm.$$di.oauth2Service.promise.then(function(service){
 				service.token(vm.model)
 					.then(
@@ -128,7 +133,7 @@
 						}
 					)
 					.finally(function(){
-						vm.$$local.isProgressing = false;
+						defer.resolve();
 					})
 				;
 			});

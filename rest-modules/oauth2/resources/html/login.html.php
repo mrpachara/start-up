@@ -9,10 +9,10 @@
 		<h1 class="md-toolbar-tools" layout-align="center center">
 			<span style="white-space: nowrap;">Login Form</span>
 		</h1>
-		<md-progress-linear id="app-cp-progress-loading" md-mode="indeterminate" class="md-accent" ng-style="(vm.isProgressing())? {'visibility': 'visible'} : {'visibility': 'hidden'}"></md-progress-linear>
+		<md-progress-linear id="app-cp-progress-loading" md-mode="indeterminate" class="md-accent" ng-style="(vm.progress())? {'visibility': 'visible'} : {'visibility': 'hidden'}"></md-progress-linear>
 	</md-toolbar>
 	<form name="loginForm" ng-submit="vm.submit()" class="app-cl-layout">
-		<fieldset ng-disabled="vm.isProgressing()" class="app-cl-layout">
+		<fieldset ng-disabled="vm.progress()" class="app-cl-layout">
 			<div layout="column" layout-align="center center">
 				<md-input-container>
 					<label>Username</label>

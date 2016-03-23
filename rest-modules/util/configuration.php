@@ -17,6 +17,24 @@
 				'alias' => "angular-self", 'module-id' => "util.app",
 			],
 
+/*
+			[
+				'rel' => 'module/javascript', 'href' => $GLOBALS['_rest']->getModulePath("bower_components/jquery/dist/jquery.js"),
+				'alias' => "jquery", 'module-id' => "jquery",
+			],
+*/
+			[
+				'rel' => 'module/javascript', 'href' => $GLOBALS['_rest']->getModulePath("bower_components/angular/angular.js"),
+				'alias' => "angular", 'module-id' => "ng",
+			],
+			[
+				'rel' => 'module/javascript', 'href' => $GLOBALS['_rest']->getModulePath("bower_components/link-driven/angular-core.js"),
+				'alias' => "ldrvn", 'module-id' => "ldrvn",
+			],
+			[
+				'rel' => 'module/javascript', 'href' => $GLOBALS['_rest']->getModulePath("bower_components/link-driven/angular-service.js"),
+				'alias' => "ldrvn-service", 'module-id' => "ldrvn.service",
+			],
 			[
 				'rel' => 'module/javascript', 'href' => $GLOBALS['_rest']->getModulePath("bower_components/angular-aria/angular-aria.js"),
 				'alias' => "angular-aria", 'module-id' => "ngAria",

@@ -28,13 +28,13 @@ var RESOURCEBASE = <?= json_encode(BASEPATH) ?>;
 var APPCONFIGFILE = RESOURCEBASE  +  <?= json_encode($infra['rest']['base'].$conf['app']['context'].'/configuration') ?>;
 		</script>
 
-		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/bower_components/less/dist/less.js" data-env="development" data-async="true"></script>
-		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/bower_components/jquery/dist/jquery.js"></script>
+		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>rest/util/bower_components/less/dist/less.js" data-env="development" data-async="true"></script>
+		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>rest/util/bower_components/jquery/dist/jquery.js"></script>
 
-		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/bower_components/angular/angular.js"></script>
+		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>rest/util/bower_components/angular/angular.js" data-module-id="ng"></script>
 
-		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/bower_components/link-driven/angular-core.js"></script>
-		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/lib/bower_components/link-driven/angular-service.js"></script>
+		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>rest/util/bower_components/link-driven/angular-core.js" data-module-id="ldrvn"></script>
+		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>rest/util/bower_components/link-driven/angular-service.js" data-module-id="ldrvn.service"></script>
 
 		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/app-bootstrap.js"></script>
 	</head>

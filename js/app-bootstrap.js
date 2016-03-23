@@ -1,7 +1,10 @@
 (function(GLOBALOBJECT, angular){
 	'use strict';
 
-	angular.module('app.bootstrap', ['ng', 'ldrvn', 'ldrvn.service'])
+	var appConfig = angular.module('app.config', []);
+	appConfig.constant('configCache', angular.injector(['ng']).get('$cacheFactory')('config-cache'));
+
+	angular.module('app.bootstrap', ['ng', 'ldrvn', 'ldrvn.service', 'app.config'])
 		.config([
 			'configServiceProvider',
 			function(configServiceProvider){
@@ -15,6 +18,7 @@
 		function($log, $document, moduleService){
 			moduleService.appendScripts().then(
 				function(moduleIds){
+					moduleIds.unshift('app.config');
 					$log.info('loaded modules:', moduleIds);
 					var document = $document[0];
 					angular.element(document).ready(function(){
@@ -26,5 +30,5 @@
 				}
 			);
 		}
-	], GLOBALOBJECT);
+	]);
 })(this, this.angular);

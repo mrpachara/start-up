@@ -98,5 +98,54 @@
 				};
 			}
 		])
+
+		.factory('util', [
+			'$q', '$timeout', '$log',
+			function($q, $timeout, $log){
+				var service;
+
+				return service = {
+					'createProgress': function(_settings){
+						var settings = {
+							'delay': 300,
+							'timeout': 30000,
+						};
+						angular.extend(settings, _settings);
+
+						var local = {
+							'count': 0,
+						};
+
+						return {
+							'process': function(promise){
+								var handler = $timeout(function(){
+									local.count++;
+
+									var timeoutHandler = $timeout(function(){
+										timeoutHandler = null;
+										$log.warn('timeout for:', promise);
+										local.count--;
+									}, settings.timeout);
+
+									promise.finally(function(){
+										if(timeoutHandler !== null){
+											$timeout.cancel(timeoutHandler);
+											local.count--;
+										}
+									});
+								}, settings.delay);
+
+								promise.finally(function(){
+									$timeout.cancel(handler);
+								});
+							},
+							'count': function(){
+								return local.count;
+							},
+						};
+					},
+				};
+			}
+		])
 	;
 })(this, this.angular);
