@@ -27,22 +27,7 @@
 					$mdIconProvider.iconSet(link['set-name'], link.href);
 				});
 
-				$provide.decorator('$mdIcon', [
-					'$delegate',
-					function($delegate){
-						return function(){
-							var args = [].slice.call(arguments);
-							var id = args[0];
-							var ids = id.split(':', 2);
-
-							if((ids.length === 2) && ($iconSetNames.indexOf(ids[0]) >= 0)){
-								args[0] = args[0].replace(/-/g, '_') + '_24px';
-							}
-
-							return $delegate.apply(undefined, args);
-						}
-					}
-				]);
+				$provide.decorator('$mdIcon', $mdIconDecorator);
 
 				$httpProvider.interceptors.push('utilHttpInterceptor');
 			}
@@ -58,14 +43,19 @@
 		])
 
 		.factory('utilHttpInterceptor', [
-			'$injector',
-			function($injector){
+			'$injector', '$q',
+			'utilLogService',
+			function($injector, $q, utilLogService){
 				var service;
 				return service = {
 					'response': function(response){
 						try{
 							var $mdToast = $injector.get('$mdToast');
-							if(angular.isDefined(response.data) && (response.data !== null) && angular.isDefined(response.data.info)){
+
+							if(response.data && response.data.info){
+								var message = response.data.info;
+
+								utilLogService.push('info', message, response.data);
 								$mdToast.showSimple(message);
 							}
 						} catch(excp){}
@@ -74,28 +64,33 @@
 					},
 					'responseError': function(reject){
 						try{
-							var
-								$q = $injector.get('$q'),
-								$mdToast = $injector.get('$mdToast')
-							;
+							var $mdToast = $injector.get('$mdToast');
 
 							var message;
 							if(reject instanceof Error){
 								message = reject.message;
-							} else if(angular.isDefined(reject.data) && (reject.data !== null) && angular.isDefined(reject.data.error_description)){
+							} else if(reject.data && reject.data.error_description){
 								message = reject.data.error_description;
-							} else if(angular.isDefined(reject.statusText)){
+							} else if(reject.statusText){
 								message = reject.statusText;
 							} else{
 								message = reject;
 							}
 
+							utilLogService.push('error', message, (reject.data)? reject.data : reject);
 							$mdToast.showSimple(message);
 						} catch($excp){}
 
 						return $q.reject(reject);
 					},
 				};
+			}
+		])
+
+		.factory('utilLogService', [
+			'util',
+			function(util){
+				return util.createLog(50);
 			}
 		])
 
@@ -112,25 +107,26 @@
 						};
 						angular.extend(settings, _settings);
 
-						var local = {
+						var localProvider = {
 							'count': 0,
 						};
 
-						return {
+						var service;
+						return service = {
 							'process': function(promise){
 								var handler = $timeout(function(){
-									local.count++;
+									localProvider.count++;
 
 									var timeoutHandler = $timeout(function(){
 										timeoutHandler = null;
 										$log.warn('timeout for:', promise);
-										local.count--;
+										localProvider.count--;
 									}, settings.timeout);
 
 									promise.finally(function(){
 										if(timeoutHandler !== null){
 											$timeout.cancel(timeoutHandler);
-											local.count--;
+											localProvider.count--;
 										}
 									});
 								}, settings.delay);
@@ -138,9 +134,36 @@
 								promise.finally(function(){
 									$timeout.cancel(handler);
 								});
+
+								return service;
 							},
 							'count': function(){
-								return local.count;
+								return localProvider.count;
+							},
+						};
+					},
+					'createLog': function(limit){
+						limit = limit || 20;
+						var local = {
+							'logs': [],
+						};
+
+						var service;
+						return service = {
+							'push': function(type, message, data){
+								local.logs.unshift({
+									'type': type,
+									'message': message,
+									'timestamp': new Date(),
+									'data': data,
+								});
+
+								local.logs.splice(limit, local.logs.length);
+
+								return service;
+							},
+							'list': function(){
+								return angular.copy(local.logs);
 							},
 						};
 					},
@@ -148,4 +171,19 @@
 			}
 		])
 	;
-})(this, this.angular);
+
+	$mdIconDecorator.$inject = ['$delegate'];
+	function $mdIconDecorator($delegate){
+		return function(){
+			var args = [].slice.call(arguments);
+			var id = args[0];
+			var ids = id.split(':', 2);
+
+			if((ids.length === 2) && ($iconSetNames.indexOf(ids[0]) >= 0)){
+				args[0] = args[0].replace(/-/g, '_') + '_24px';
+			}
+
+			return $delegate.apply(undefined, args);
+		}
+	}
+})(this, angular);

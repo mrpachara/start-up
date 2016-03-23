@@ -13,7 +13,7 @@
 			flex layout="column" class="app-cl-layout">
 			<md-toolbar class="md-primary">
 				<h1 class="md-toolbar-tools">
-					<span style="white-space: nowrap;">Test</span>
+					<span style="white-space: nowrap;">{{ app.name() }}</span>
 				</h1>
 				<!--
 				<div ng-controller="UserController as user">
@@ -38,7 +38,9 @@
 		<md-toolbar class="md-primary">
 			<header id="app-ly-header" class="md-toolbar-tools">
 				<div layout-align="start center" layout="row">
-					<md-button ng-click="app.$mdSidenav('app-cp-side-nav').open()" class="md-icon-button" aria-label="show navigation menu">
+					<md-button ng-show="!app.$mdSidenav('app-cp-side-nav').isLockedOpen()"
+						ng-click="app.$mdSidenav('app-cp-side-nav').open()"
+						class="md-icon-button" aria-label="show navigation menu">
 						<md-icon md-svg-icon="navigation:ic-menu" alt="navigation menu"></md-icon>
 					</md-button>
 				</div>
@@ -58,7 +60,28 @@
 							</div>
 					</form>
 				</div>
-				<!--
+				<md-menu>
+					<md-button type="button" class="md-icon-button" aria-label="more action" ng-click="$mdOpenMenu()">
+						<md-icon md-menu-origin md-svg-icon="navigation:ic-more-vert" alt="more vertical"></md-icon>
+					</md-button>
+					<md-menu-content width="4" style="padding-top: 0px;">
+						<md-menu-item>
+							<div layout="row" layout-align="start center" style="padding-right: 8px;">
+								<span>Command</span>
+								<span flex></span>
+								<md-icon md-menu-align-target md-svg-icon="navigation:ic-more-vert" alt="more action"></md-icon>
+							</div>
+						</md-menu-item>
+						<md-menu-divider></md-menu-divider>
+						<md-menu-item>
+							<md-button type="button" aria-label="show log" ng-click="toolbar.showLogs($event)">
+								<md-icon md-svg-icon="action:ic-info-outline" alt="show log"></md-icon>
+								<span>Display logs</span>
+							</md-button>
+						</md-menu-item>
+					</md-menu-content>
+				</md-menu>
+<!--
 				<md-menu>
 					<md-button class="md-icon-button" aria-label="more action" ng-click="$mdOpenMenu()">
 						<md-icon md-menu-origin md-svg-icon="navigation:ic-more-vert" alt="more action"></md-icon>
@@ -82,7 +105,7 @@
 						</md-menu-item>
 					</md-menu-content>
 				</md-menu>
-				-->
+-->
 			</header>
 			<!-- ng-class="{'app-st-active': toolbar.appProgress.loading}" -->
 			<md-progress-linear id="app-cp-progress-loading" md-mode="indeterminate" ng-show="toolbar.appProgress.isLoading()" class="md-accent"></md-progress-linear>

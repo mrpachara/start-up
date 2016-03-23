@@ -1,14 +1,34 @@
 (function(GLOBALOBJECT, angular){
 	'use strict';
 
-	var appConfig = angular.module('app.config', []);
-	appConfig.constant('configCache', angular.injector(['ng']).get('$cacheFactory')('config-cache'));
+	var appConfig;
+	try{
+		appConfig = angular.module('app.config');
+	} catch(excp){
+		appConfig = angular.module('app.config', []).constant('config', {
+			'appName': 'Unkonwn',
+			'configURI': null,
+		});
+	}
 
-	angular.module('app.bootstrap', ['ng', 'ldrvn', 'ldrvn.service', 'app.config'])
+	angular.injector(['ng'], true).invoke([
+		'$cacheFactory',
+		function($cacheFactory){
+			appConfig.constant('configCache', $cacheFactory('config-cache'));
+		}
+	]);
+
+	/**********************************************************************************************************
+		IMPORTANT: DO NOT cache configuration loader from app.config, because it has difference config engine.
+		The code below doesn't work anymore.
+	***********************************************************************************************************/
+	//appConfig.constant('configLoaderCache', angular.injector(['ng']).get('$cacheFactory')('config-loader-cache'));
+
+	angular.module('app.bootstrap', ['ng', 'ldrvn', 'ldrvn.service', appConfig.name])
 		.config([
-			'configServiceProvider',
-			function(configServiceProvider){
-				configServiceProvider.configURI(GLOBALOBJECT.APPCONFIGFILE);
+			'config', 'configServiceProvider',
+			function(config, configServiceProvider){
+				if(config.configURI) configServiceProvider.configURI(config.configURI);
 			}
 		])
 	;
@@ -18,7 +38,7 @@
 		function($log, $document, moduleService){
 			moduleService.appendScripts().then(
 				function(moduleIds){
-					moduleIds.unshift('app.config');
+					moduleIds.unshift(appConfig.name);
 					$log.info('loaded modules:', moduleIds);
 					var document = $document[0];
 					angular.element(document).ready(function(){
@@ -31,4 +51,4 @@
 			);
 		}
 	]);
-})(this, this.angular);
+})(this, angular);

@@ -25,7 +25,7 @@
 
 		.provider('oauth2Service', [
 			function(){
-				var local = {
+				var localProvider = {
 					'client': {},
 					'storage': null,
 					'tokenHandler': null,
@@ -60,7 +60,7 @@
 
 				angular.extend(provider, {
 					'setClient': function(client){
-						angular.extend(local.client, client);
+						angular.extend(localProvider.client, client);
 
 						return provider;
 					},
@@ -72,43 +72,43 @@
 					'$get': [
 						'$q', '$injector', '$ldrvn', 'oauth2ConfigLoader',
 						function($q, $injector, $ldrvn, oauth2ConfigLoader){
-							local.storage = $injector.invoke(storageInjector, GLOBALOBJECT);
+							localProvider.storage = $injector.invoke(storageInjector, GLOBALOBJECT);
 
 							function refreshToken(service){
-								if(!(parseInt(local.storage.prop('expires')) > Date.now()) && local.storage.prop('refresh_token')){
+								if(!(parseInt(localProvider.storage.prop('expires')) > Date.now()) && localProvider.storage.prop('refresh_token')){
 									return service.token({
 										'grant_type': 'refresh_token',
-										'refresh_token': local.storage.prop('refresh_token'),
+										'refresh_token': localProvider.storage.prop('refresh_token'),
 									});
 								}
 							}
 
 							return $ldrvn.createService(oauth2ConfigLoader, {
 								'token': function(data, config){
-									if(angular.isUndefined(local.client.client_id)) return $q.reject(new Error('Client is not defined'));
+									if(angular.isUndefined(localProvider.client.client_id)) return $q.reject(new Error('Client is not defined'));
 
 									config = config || {};
 									if(angular.isUndefined(config.headers)) config.headers = {};
 									config._bypassToken = true;
-									config.headers['Authorization'] = 'Basic ' + btoa(local.client.client_id + ':' + ((local.client.secret)? local.client.secret : ''));
-									//angular.extend(data, local.client);
+									config.headers['Authorization'] = 'Basic ' + btoa(localProvider.client.client_id + ':' + ((localProvider.client.secret)? localProvider.client.secret : ''));
+									//angular.extend(data, localProvider.client);
 
-									return local.tokenHandler = this.promise.then(function(service){
+									return localProvider.tokenHandler = this.promise.then(function(service){
 										return service.$$configService.$send('token', data, config)
 											.then(
 												function(model){
 													angular.forEach(model, function(value, key){
 														if(key === 'expires_in'){
-															local.storage.prop('expires', Date.now() + ((value - 60) * 1000));
+															localProvider.storage.prop('expires', Date.now() + ((value - 60) * 1000));
 														} else{
-															local.storage.prop(key, value);
+															localProvider.storage.prop(key, value);
 														}
 													});
 
 													return model;
 												},
 												function(model){
-													local.storage.clear();
+													localProvider.storage.clear();
 													return $q.reject(model);
 												}
 											)
@@ -132,12 +132,12 @@
 
 									if(config._bypassToken || config._public) return config;
 
-									return ((local.tokenHandler !== null)? local.tokenHandler.then(function(){return service}).then(refreshToken) : $q.when(refreshToken(service)))
+									return ((localProvider.tokenHandler !== null)? localProvider.tokenHandler.then(function(){return service}).then(refreshToken) : $q.when(refreshToken(service)))
 										.then(
 											function(){
-												if(local.storage.prop('access_token')){
+												if(localProvider.storage.prop('access_token')){
 													if(angular.isUndefined(config.headers)) config.headers = {};
-													config.headers['Authorization'] = local.storage.prop('token_type') + ' ' + local.storage.prop('access_token');
+													config.headers['Authorization'] = localProvider.storage.prop('token_type') + ' ' + localProvider.storage.prop('access_token');
 												}
 
 												return config;
@@ -179,4 +179,4 @@
 			}
 		])
 	;
-})(this, this.angular);
+})(this, angular);

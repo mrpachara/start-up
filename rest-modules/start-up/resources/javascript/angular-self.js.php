@@ -65,7 +65,7 @@
 	;
 
 	AppController.$inject= [
-		'$log', '$window',
+		'$log', '$window', '$injector',
 		'$mdMedia', '$mdSidenav',
 		'startUpService', 'oauth2Service',
 	];
@@ -79,7 +79,12 @@
 
 		vm.$$local = {
 			'user': null,
+			'config': {},
 		};
+
+		try{
+			vm.$$local.config = vm.$$di.$injector.get('config');
+		} catch(excp){}
 
 		vm.$mdMedia = vm.$$di.$mdMedia;
 		vm.$mdSidenav = vm.$$di.$mdSidenav;
@@ -88,16 +93,16 @@
 				vm.$$local.user = data;
 			},
 			function(data){
-				vm.$$di.$log.info('user info:', data);
-				vm.$$di.oauth2Service.promise.then(function(service){
-					vm.$$di.$window.location.href = service.loginPageUrl() + '?redirect_uri=' + encodeURIComponent(vm.$$di.$window.location.href);
-				});
+				vm.$$di.$window.location.href = vm.$$di.oauth2Service.loginPageUrl() + '?redirect_uri=' + encodeURIComponent(vm.$$di.$window.location.href);
 			}
 		);
 	}
 	angular.extend(AppController.prototype, {
 		'layout': function(){
 			return (this.$$local.user)? this.$$di.startUpService.layout('layout') : null;
-		}
+		},
+		'name': function(){
+			return this.$$local.config.appName;
+		},
 	});
 })(this, this.angular);

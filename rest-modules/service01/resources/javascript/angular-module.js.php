@@ -105,4 +105,4 @@
 			return vm.$$local.params.id;
 		},
 	});
-})(this, this.angular);
+})(this, angular);

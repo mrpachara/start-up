@@ -23,11 +23,6 @@
 		<link rel="stylesheet/less" type="text/css" href="<?= htmlspecialchars(BASEPATH) ?>css/less/app.less" />
 		<link rel="stylesheet/less" type="text/css" href="<?= htmlspecialchars(BASEPATH) ?>css/less/app-fixed.less" />
 
-		<script type="application/javascript">
-var RESOURCEBASE = <?= json_encode(BASEPATH) ?>;
-var APPCONFIGFILE = RESOURCEBASE  +  <?= json_encode($infra['rest']['base'].$conf['app']['context'].'/configuration') ?>;
-		</script>
-
 		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>rest/util/bower_components/less/dist/less.js" data-env="development" data-async="true"></script>
 		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>rest/util/bower_components/jquery/dist/jquery.js"></script>
 
@@ -35,6 +30,19 @@ var APPCONFIGFILE = RESOURCEBASE  +  <?= json_encode($infra['rest']['base'].$con
 
 		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>rest/util/bower_components/link-driven/angular-core.js" data-module-id="ldrvn"></script>
 		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>rest/util/bower_components/link-driven/angular-service.js" data-module-id="ldrvn.service"></script>
+
+		<script type="application/javascript">
+(function(){
+	var RESOURCEBASE = <?= json_encode(BASEPATH) ?>;
+	var APPCONFIGFILE = RESOURCEBASE  +  <?= json_encode($infra['rest']['base'].$conf['app']['context'].'/configuration') ?>;
+	var APPNAME = <?= json_encode($conf['app']['name']) ?>;
+
+	var appConfig = angular.module('app.config', []).constant('config', {
+		'appName': APPNAME,
+		'configURI': APPCONFIGFILE,
+	});
+})();
+		</script>
 
 		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/app-bootstrap.js"></script>
 	</head>
