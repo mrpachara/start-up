@@ -72,40 +72,15 @@
 								<md-icon md-menu-align-target md-svg-icon="navigation:ic-more-vert" alt="more action"></md-icon>
 							</div>
 						</md-menu-item>
-						<md-menu-divider></md-menu-divider>
+						<md-menu-divider style="margin-top: 0px;"></md-menu-divider>
 						<md-menu-item>
-							<md-button type="button" aria-label="show log" ng-click="toolbar.showLogs($event)">
+							<md-button type="button" aria-label="show log" ng-click="app.showLog($event)">
 								<md-icon md-svg-icon="action:ic-info-outline" alt="show log"></md-icon>
 								<span>Display logs</span>
 							</md-button>
 						</md-menu-item>
 					</md-menu-content>
 				</md-menu>
-<!--
-				<md-menu>
-					<md-button class="md-icon-button" aria-label="more action" ng-click="$mdOpenMenu()">
-						<md-icon md-menu-origin md-svg-icon="navigation:ic-more-vert" alt="more action"></md-icon>
-					</md-button>
-					<md-menu-content width="4" style="padding-top: 0px;">
-						<md-menu-item>
-							<div layout="row" layout-align="start center" style="padding-right: 8px;">
-								<h4 style="margin: 0px 0.50em 0px 0.25em;">Command</h4>
-								<span flex></span>
-								<md-icon md-menu-align-target md-svg-icon="navigation:ic-more-vert" alt="more action"></md-icon>
-							</div>
-						</md-menu-item>
-						<md-menu-divider style="margin-top: 0px;"></md-menu-divider>
-						<md-menu-item>
-							<md-button aria-label="show log" ng-click="toolbar.showLogs($event)">
-								<div layout="row" layout-align="start center">
-									<md-icon md-svg-icon="action:ic-info-outline" alt="show log"></md-icon>
-									<span>Display logs</span>
-								</div>
-							</md-button>
-						</md-menu-item>
-					</md-menu-content>
-				</md-menu>
--->
 			</header>
 			<!-- ng-class="{'app-st-active': toolbar.appProgress.loading}" -->
 			<md-progress-linear id="app-cp-progress-loading" md-mode="indeterminate" ng-show="toolbar.appProgress.isLoading()" class="md-accent"></md-progress-linear>

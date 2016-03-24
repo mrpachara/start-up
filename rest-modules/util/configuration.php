@@ -63,8 +63,13 @@
 				'rel' => 'module/javascript', 'href' => $GLOBALS['_rest']->getModulePath("javascript/angular-module.js"),
 				'alias' => "angular-module", 'module-id' => "util",
 			],
+			[
+				'rel' => 'module/javascript', 'href' => $GLOBALS['_rest']->getModulePath("javascript/angular-controller.js"),
+				'alias' => "angular-controller", 'module-id' => "util.controller",
+			],
 
-			['rel' => 'template', 'href' => $GLOBALS['_rest']->getModulePath('html/login.html'), 'alias' => "loading"],
+			['rel' => 'template', 'href' => $GLOBALS['_rest']->getModulePath('html/popup-dialog.html'), 'alias' => "popup-dialog"],
+			['rel' => 'template', 'href' => $GLOBALS['_rest']->getModulePath('html/log-list.html'), 'alias' => "log-list"],
 		],
 	];
 

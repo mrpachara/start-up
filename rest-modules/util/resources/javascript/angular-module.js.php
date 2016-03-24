@@ -42,6 +42,23 @@
 			}
 		])
 
+		.factory('utilConfigLoader', [
+			'$ldrvn',
+			function($ldrvn){
+				return $ldrvn.loadConfig(<?= json_encode($GLOBALS['_rest']->getConfigUri()) ?>);
+			}
+		])
+
+		.factory('utilService', [
+			'$ldrvn',
+			'utilConfigLoader',
+			function($ldrvn, utilConfigLoader){
+				return $ldrvn.createService(utilConfigLoader, {
+
+				});
+			}
+		])
+
 		.factory('utilHttpInterceptor', [
 			'$injector', '$q',
 			'utilLogService',

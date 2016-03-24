@@ -65,8 +65,9 @@
 	;
 
 	AppController.$inject= [
-		'$log', '$window', '$injector',
-		'$mdMedia', '$mdSidenav',
+		'$log', '$window', '$injector', '$q', '$interval',
+		'$mdMedia', '$mdSidenav', '$mdDialog',
+		'utilService', 'utilLogService',
 		'startUpService', 'oauth2Service',
 	];
 	function AppController(){
@@ -96,6 +97,25 @@
 				vm.$$di.$window.location.href = vm.$$di.oauth2Service.loginPageUrl() + '?redirect_uri=' + encodeURIComponent(vm.$$di.$window.location.href);
 			}
 		);
+
+		var types = ['info', 'error'];
+		var count = 0;
+		var datas = [
+			undefined,
+			{
+				'error_exception': 'error_exception\nline1',
+			},
+			undefined,
+			{
+				'error_trace': 'error_trace\nline1\nline2\nline3',
+			},
+		];
+		var count_data = 0;
+		vm.$$di.$interval(function(){
+			vm.$$di.utilLogService.push(types[count++], 'abcd', datas[count_data++]);
+			count %= 2;
+			count_data %= 4;
+		}, 3000);
 	}
 	angular.extend(AppController.prototype, {
 		'layout': function(){
@@ -103,6 +123,22 @@
 		},
 		'name': function(){
 			return this.$$local.config.appName;
+		},
+		'showLog': function(){
+			var vm = this;
+
+			return vm.$$di.utilService.promise.then(function(utilService){
+				return vm.$$di.$mdDialog.show({
+					'autoWrap': false,
+					'templateUrl': utilService.template('popup-dialog'),
+					'controller': 'UtilDialogController',
+					'bindToController': true,
+					'controllerAs': 'dialog',
+					'locals': {
+						'template': utilService.template('log-list'),
+					},
+				});
+			});
 		},
 	});
 })(this, this.angular);
