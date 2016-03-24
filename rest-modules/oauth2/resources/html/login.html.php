@@ -16,7 +16,7 @@
 			<div layout="column" layout-align="center center">
 				<md-input-container>
 					<label>Username</label>
-					<input type="text" name="username" required ng-model="vm.model.username" />
+					<input type="text" name="username" required ng-model="vm.model.username" util-autofocus="1" />
 					<div ng-messages="loginForm.username.$error">
 						<div ng-message="required">Required!</div>
 					</div>

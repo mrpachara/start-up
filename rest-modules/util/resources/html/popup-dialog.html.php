@@ -4,10 +4,10 @@
 		exit;
 	}
 ?>
-<md-dialog style="min-width: 80%;" aria-label="Popup dialog">
+<md-dialog style="min-width: 80%;" aria-label="{{ dialog.name }} dialog">
 	<md-toolbar>
 		<div class="md-toolbar-tools">
-			<h2>Log</h2>
+			<h2>{{ dialog.name }}</h2>
 		</div>
 	</md-toolbar>
 	<md-dialog-content ng-include="dialog.template"></md-dialog-content>

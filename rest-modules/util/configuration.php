@@ -67,6 +67,10 @@
 				'rel' => 'module/javascript', 'href' => $GLOBALS['_rest']->getModulePath("javascript/angular-controller.js"),
 				'alias' => "angular-controller", 'module-id' => "util.controller",
 			],
+			[
+				'rel' => 'module/javascript', 'href' => $GLOBALS['_rest']->getModulePath("javascript/angular-directive.js"),
+				'alias' => "angular-directive", 'module-id' => "util.directive",
+			],
 
 			['rel' => 'template', 'href' => $GLOBALS['_rest']->getModulePath('html/popup-dialog.html'), 'alias' => "popup-dialog"],
 			['rel' => 'template', 'href' => $GLOBALS['_rest']->getModulePath('html/log-list.html'), 'alias' => "log-list"],

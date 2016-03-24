@@ -10,6 +10,7 @@
 	angular.module(<?= json_encode($config->linkProp('angular-self', 'module-id')) ?>, [
 		'ldrvn', 'ldrvn.service', 'ngComponentRouter',
 		'ngMessages', 'ngSanitize', 'ngMaterial',
+		'util', 'util.controller', 'util.directive',
 		'oauth2',
 	])
 		.config([

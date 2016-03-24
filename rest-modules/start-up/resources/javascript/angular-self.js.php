@@ -135,6 +135,7 @@
 					'bindToController': true,
 					'controllerAs': 'dialog',
 					'locals': {
+						'name': 'Log',
 						'template': utilService.template('log-list'),
 					},
 				});

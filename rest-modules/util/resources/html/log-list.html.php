@@ -5,7 +5,7 @@
 	}
 ?>
 <md-list class="md-dense" ng-controller="UtilLogListController as log">
-	<md-list-item class="md-3-line" ng-repeat="item in log.items">
+	<md-list-item class="md-3-line md-long-text" ng-repeat="item in log.items">
 		<md-icon ng-class="{'md-primary': (item.type === 'info'), 'md-warn': (item.type === 'error')}" md-svg-icon="{{ (item.type === 'info')? 'action:ic-info' : 'alert:ic-error' }}"></md-icon>
 		<div class="md-list-item-text">
 			<h3>{{ item.message }}</h3>
