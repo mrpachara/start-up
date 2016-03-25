@@ -42,6 +42,31 @@
 			}
 		])
 
+		.provider('utilLogService', [
+			function(){
+				var providerLocal = {
+					'maxLog': 50,
+				};
+				var provider = this;
+				return angular.extend(provider, {
+					'maxLog': function(value){
+						if(arguments.length === 2){
+							providerLocal.maxLog = value;
+							return provider;
+						} else{
+							return providerLocal.maxLog;
+						}
+					},
+					'$get': [
+						'util',
+						function(util){
+							return util.createLog(providerLocal.maxLog);
+						}
+					]
+				});
+			}
+		])
+
 		.factory('utilConfigLoader', [
 			'$ldrvn',
 			function($ldrvn){
@@ -51,10 +76,28 @@
 
 		.factory('utilService', [
 			'$ldrvn',
+			'$mdDialog',
 			'utilConfigLoader',
-			function($ldrvn, utilConfigLoader){
+			function($ldrvn, $mdDialog, utilConfigLoader){
 				return $ldrvn.createService(utilConfigLoader, {
+					'showLog': function(ev){
+						var service = this;
 
+						return service.promise.then(function(service){
+							return $mdDialog.show({
+								'autoWrap': false,
+								'templateUrl': service.template('popup-dialog'),
+								'targetEvent': ev,
+								'controller': 'UtilDialogController',
+								'bindToController': true,
+								'controllerAs': 'dialog',
+								'locals': {
+									'name': 'Log',
+									'template': service.template('log-list'),
+								},
+							});
+						});
+					},
 				});
 			}
 		])
@@ -101,13 +144,6 @@
 						return $q.reject(reject);
 					},
 				};
-			}
-		])
-
-		.factory('utilLogService', [
-			'util',
-			function(util){
-				return util.createLog(50);
 			}
 		])
 

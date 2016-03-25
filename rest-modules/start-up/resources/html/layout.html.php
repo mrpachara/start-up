@@ -74,7 +74,7 @@
 						</md-menu-item>
 						<md-menu-divider style="margin-top: 0px;"></md-menu-divider>
 						<md-menu-item>
-							<md-button type="button" aria-label="show log" ng-click="app.showLog($event)">
+							<md-button type="button" aria-label="show log" ng-click="app.utilService.showLog($event)">
 								<md-icon md-svg-icon="action:ic-info-outline" alt="show log"></md-icon>
 								<span>Display logs</span>
 							</md-button>

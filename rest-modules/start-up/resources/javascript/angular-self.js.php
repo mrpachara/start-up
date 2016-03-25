@@ -89,6 +89,8 @@
 
 		vm.$mdMedia = vm.$$di.$mdMedia;
 		vm.$mdSidenav = vm.$$di.$mdSidenav;
+		vm.utilService = vm.$$di.utilService;
+
 		vm.$$di.oauth2Service.info().then(
 			function(data){
 				vm.$$local.user = data;
@@ -111,11 +113,11 @@
 			},
 		];
 		var count_data = 0;
-		vm.$$di.$interval(function(){
+		//vm.$$di.$interval(function(){
 			vm.$$di.utilLogService.push(types[count++], 'abcd', datas[count_data++]);
 			count %= 2;
 			count_data %= 4;
-		}, 3000);
+		//}, 3000);
 	}
 	angular.extend(AppController.prototype, {
 		'layout': function(){
@@ -123,23 +125,6 @@
 		},
 		'name': function(){
 			return this.$$local.config.appName;
-		},
-		'showLog': function(){
-			var vm = this;
-
-			return vm.$$di.utilService.promise.then(function(utilService){
-				return vm.$$di.$mdDialog.show({
-					'autoWrap': false,
-					'templateUrl': utilService.template('popup-dialog'),
-					'controller': 'UtilDialogController',
-					'bindToController': true,
-					'controllerAs': 'dialog',
-					'locals': {
-						'name': 'Log',
-						'template': utilService.template('log-list'),
-					},
-				});
-			});
 		},
 	});
 })(this, this.angular);
