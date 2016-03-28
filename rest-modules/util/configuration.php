@@ -13,6 +13,11 @@
 			],
 
 			[
+				'rel' => 'stylesheet/less', 'href' => $GLOBALS['_rest']->getModulePath("css/util.less"),
+				'alias' => "util-less",
+			],
+
+			[
 				'rel' => 'self/javascript', 'href' => $GLOBALS['_rest']->getModulePath("javascript/angular-self.js"),
 				'alias' => "angular-self", 'module-id' => "util.app",
 			],
@@ -76,6 +81,7 @@
 			['rel' => 'template', 'href' => $GLOBALS['_rest']->getModulePath('html/log-list.html'), 'alias' => "log-list"],
 			['rel' => 'template', 'href' => $GLOBALS['_rest']->getModulePath('html/search-form.html'), 'alias' => "search-form"],
 			['rel' => 'template', 'href' => $GLOBALS['_rest']->getModulePath('html/menu.html'), 'alias' => "menu"],
+			['rel' => 'template', 'href' => $GLOBALS['_rest']->getModulePath('html/menu-item.html'), 'alias' => "menu-item"],
 		],
 	];
 

@@ -7,7 +7,7 @@
 (function(GLOBALOBJECT, angular){
 	'use strict';
 
-	angular.element('head').append('<link rel="stylesheet" type="text/css" href="<?= htmlspecialchars($config->linkProp('angular-material-css', 'href')) ?>" />')
+	//angular.element('head').append('<link rel="stylesheet" type="text/css" href="<?= htmlspecialchars($config->linkProp('angular-material-css', 'href')) ?>" />')
 
 	var $iconSetNames = [];
 
@@ -35,14 +35,35 @@
 		])
 
 		.run([
-			'$http', '$templateCache', '$rootScope', 'iconLinks', 'utilSearchService',
-			function($http, $templateCache, $rootScope, iconLinks, utilSearchService){
+			'$http', '$templateCache', '$rootScope', 'iconLinks', 'utilSearchService', 'utilService',
+			function($http, $templateCache, $rootScope, iconLinks, utilSearchService, utilService){
 				angular.forEach(iconLinks, function(link) {
 					$http.get(link.href, {cache: $templateCache});
 				});
 
 				$rootScope.$on('$locationChangeSuccess', function(){
 					utilSearchService.enabled(false);
+				});
+
+				utilService.promise.then(function(service){
+					var $head = angular.element('head');
+					service.$$configService.$forLinks('stylesheet', function(link){
+						$head.append(angular.element('<link />', {
+							'rel': 'stylesheet',
+							'type': 'text/css',
+							'href': link.href,
+						}));
+					});
+					service.$$configService.$forLinks('stylesheet/less', function(link){
+						var $link = angular.element('<link />', {
+							'rel': 'stylesheet/less',
+							'type': 'text/css',
+							'href': link.href,
+						});
+						$head.append($link);
+						less.sheets.push($link[0]);
+					});
+					less.refresh();
 				});
 			}
 		])

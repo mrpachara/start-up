@@ -4,3 +4,8 @@
 		exit;
 	}
 ?>
+<div>
+	<md-button type="button">
+		<span>{{ menuItem.item().name }}</span>
+	</md-button>
+</div>

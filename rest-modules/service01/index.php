@@ -9,6 +9,7 @@
 	$service = $GLOBALS['_rest']->getService();
 	$config = new \sys\Config(__DIR__.'/'.\sys\Rest::CONFIG_SERVICE.'.php');
 	$GLOBALS['_pdoconfigurated'] = new \sys\Pdoconfigurated($infra['db']);
+	$data = null;
 
 	try{
 		if($service == \sys\Rest::CONFIG_SERVICE){

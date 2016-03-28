@@ -6,16 +6,6 @@
 ?>
 <form method="get" class="util-cp-search-box" ng-show="search.enabled()"
 	ng-submit="search.submit()" layout="row" layout-align="end center" style="width: 100%;">
-	<style type="text/css" scoped="scoped">
-.util-cp-search-box input[name="term"]{
-	color: rgba(255,255,255,0.87);
-	background-color: transparent;
-
-	border: none;
-	border-bottom: 1px solid rgba(255,255,255,0.87);
-	outline: none;
-}
-	</style>
 	<md-button type="button" class="md-icon-button" aria-label="show search" ng-click="search.active($event)">
 		<md-icon md-svg-icon="action:ic-search" alt="search"></md-icon>
 	</md-button>

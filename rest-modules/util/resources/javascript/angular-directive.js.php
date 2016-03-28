@@ -63,15 +63,18 @@
 		})
 
 		.component('utilMenuItem', {
+			'require': {
+				'utilMenuCtrl': '^utilMenu',
+			},
 			'templateUrl': ['utilService', function(utilService){
 				return utilService.promise.then(function(service){
-					return service.template('menu');
+					return service.template('menu-item');
 				});
 			}],
 			'controller': UtilMenuController,
-			'controllerAs': 'menu',
+			'controllerAs': 'menuItem',
 			'bindings': {
-				'service': '=',
+				'data': '=',
 			},
 		})
 	;
@@ -130,6 +133,8 @@
 		});
 	}
 	angular.extend(UtilMenuController.prototype, {
-
+		'item': function(){
+			return (this.service)? this.service.menu() : this.data;
+		},
 	});
 })(this, angular);

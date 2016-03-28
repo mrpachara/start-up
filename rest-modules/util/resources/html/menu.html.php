@@ -5,7 +5,7 @@
 	}
 ?>
 <ul>
-	<li ng-repeat="item in menu.service.menu().sections">
-		<util-menu-item item=""></util-menu-item>
+	<li ng-repeat="item in menu.item().items">
+		<util-menu-item data="item"></util-menu-item>
 	</li>
 </ul>
