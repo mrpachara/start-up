@@ -9,6 +9,7 @@
 
 	angular.module(<?= json_encode($config->linkProp('angular-module', 'module-id')) ?>, [
 		'ldrvn', 'ldrvn.service', 'ngComponentRouter',
+		'util',
 	])
 		.factory('startUpConfigLoader', [
 			'$ldrvn',
@@ -22,7 +23,12 @@
 			'startUpConfigLoader',
 			function($ldrvn, startUpConfigLoader){
 				return $ldrvn.createService(startUpConfigLoader, {
-
+					'menu': function(){
+						var service = this;
+						return (service.$$configService)? service.$$configService.load('menu').then(function(data){
+							return data;
+						}) : null;
+					},
 				});
 			}
 		])

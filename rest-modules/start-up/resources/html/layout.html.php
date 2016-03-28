@@ -21,16 +21,12 @@
 				</div>
 				-->
 			</md-toolbar>
-			<!--
+			<!-- ng-controller="NavController as nav" -->
 			<md-content id="app-ly-container-navigation" flex layout="column">
-				<nav id="app-cp-navigation" ng-controller="NavController as nav" ng-click="sidenav.service.close()">
-					<div ng-repeat="section in nav.getSections()">
-						<app-menu-nav menus="section.menus"></app-menu-nav>
-						<md-divider ng-if="!$last"></md-divider>
-					</div>
+				<nav id="app-cp-navigation" ng-click="app.$mdSidenav('app-cp-side-nav').close()" style="width=100%;">
+					<util-menu service="app.utilModuleService" style="width: 100%;"></util-menu>
 				</nav>
 			</md-content>
-			-->
 		</aside>
 	</md-sidenav>
 	<div layout="column" flex class="app-cl-layout">
@@ -44,21 +40,11 @@
 						<md-icon md-svg-icon="navigation:ic-menu" alt="navigation menu"></md-icon>
 					</md-button>
 				</div>
-				<h2>
-					<span>Module</span>
+				<h2 ng-show="!app.utilSearchService.activated()">
+					<span>{{ app.utilModuleService.name() }}</span>
 				</h2>
 				<div layout="row" flex>
-					<form method="get" id="app-cp-search-box" ng-if="toolbar.search.enabled()" ng-submit="toolbar.doSearch($event)" layout="row" layout-align="end center" flex>
-							<md-button type="button" class="md-icon-button" aria-label="show search" ng-click="toolbar.showSearch($event)">
-								<md-icon md-svg-icon="action:ic-search" alt="search"></md-icon>
-							</md-button>
-							<div class="app-cp-search-box-search" layout="row" flex>
-								<input type="search" name="searchTerm" aria-label="search input" ng-model="toolbar.model.searchTerm" flex />
-								<md-button type="button" class="md-icon-button" ng-click="toolbar.clearSearch($event)" aria-label="clear search">
-									<md-icon md-svg-icon="content:ic-clear" alt="clear"></md-icon>
-								</md-button>
-							</div>
-					</form>
+					<util-search service="app.utilSearchService" flex></util-search>
 				</div>
 				<md-menu>
 					<md-button type="button" class="md-icon-button" aria-label="more action" ng-click="$mdOpenMenu()">
@@ -88,7 +74,7 @@
 		<md-content id="app-ly-container-content" layout="column" flex>
 			<!-- ng-controller="ContentController as content" -->
 			<main class="app-cp-content md-content md-padding" layout="column" flex>
-				<div ng-viewport layout="column" flex></div>
+				<ng-outlet layout="column" flex></ng-outlet>
 			</main>
 		</md-content>
 	</div>

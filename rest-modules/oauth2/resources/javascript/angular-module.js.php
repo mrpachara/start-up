@@ -9,6 +9,7 @@
 
 	angular.module(<?= json_encode($config->linkProp('angular-module', 'module-id')) ?>, [
 		'ldrvn', 'ldrvn.service', 'ngComponentRouter',
+		'util',
 	])
 		.config([
 			'$httpProvider',

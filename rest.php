@@ -42,6 +42,7 @@
 
 	$GLOBALS['_rest'] = new \sys\Rest(3);
 
+	//if($GLOBALS['_rest']->getModule() === 'util' && $GLOBALS['_rest']->getService() === 'configuration') sleep(3);
 	//if($GLOBALS['_rest']->getService() != 'view') sleep(1);
 	//sleep(1);
 

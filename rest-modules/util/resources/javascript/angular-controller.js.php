@@ -15,8 +15,6 @@
 		.controller('UtilDialogController', UtilDialogController)
 
 		.controller('UtilLogListController', UtilLogListController)
-
-		.controller('UtilSearchController', UtilSearchController)
 	;
 
 	UtilDialogController.$inject = ['$mdDialog'];
@@ -43,21 +41,4 @@
 		vm.items = vm.$$di.utilLogService.list();
 	}
 
-	UtilSearchController.$inject = ['$location'];
-	function UtilSearchController(){
-		var vm = this;
-		var args = arguments;
-		vm.$$di = {};
-		angular.forEach(UtilSearchController.$inject, function(value, key){
-			vm.$$di[value] = args[key];
-		});
-
-		vm.searchTerm = null;
-	}
-	angular.extend(UtilSearchController.prototype, {
-		'submit': function(){
-			var vm = this;
-			vm.$$di.$location.search('searchTerm', vm.searchTerm);
-		},
-	});
 })(this, angular);

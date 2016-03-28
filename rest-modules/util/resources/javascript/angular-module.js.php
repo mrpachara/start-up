@@ -28,16 +28,21 @@
 				});
 
 				$provide.decorator('$mdIcon', $mdIconDecorator);
+				$provide.decorator('$http', $httpDecorator);
 
 				$httpProvider.interceptors.push('utilHttpInterceptor');
 			}
 		])
 
 		.run([
-			'$http', '$templateCache', 'iconLinks',
-			function($http, $templateCache, iconLinks){
+			'$http', '$templateCache', '$rootScope', 'iconLinks', 'utilSearchService',
+			function($http, $templateCache, $rootScope, iconLinks, utilSearchService){
 				angular.forEach(iconLinks, function(link) {
 					$http.get(link.href, {cache: $templateCache});
+				});
+
+				$rootScope.$on('$locationChangeSuccess', function(){
+					utilSearchService.enabled(false);
 				});
 			}
 		])
@@ -61,6 +66,59 @@
 						'util',
 						function(util){
 							return util.createLog(providerLocal.maxLog);
+						}
+					]
+				});
+			}
+		])
+
+		.provider('utilSearchService', [
+			function(){
+				var provider = this;
+
+				angular.extend(provider, {
+					'$get': [
+						'$location',
+						function($location){
+							var local = {
+								'activated': false,
+								'enabled': false,
+							};
+
+							function updateActive(value){
+								local.activated =	(!!value || !!service.search());
+							}
+
+							var service = {
+								'activated': function(value){
+									if(arguments.length === 0){
+										return local.activated;
+									} else{
+										updateActive(value);
+										return service;
+									}
+								},
+								'search': function(value){
+									if(arguments.length === 0){
+										return $location.search().term || null;
+									} else{
+										if(value === '') value = null;
+										$location.search('term', value);
+										updateActive(false);
+										return service;
+									}
+								},
+								'enabled': function(value){
+									if(arguments.length === 0){
+										return local.enabled;
+									} else{
+										local.enabled = value;
+										return service;
+									}
+								},
+							};
+
+							return service.activated(false).enabled(false);
 						}
 					]
 				});
@@ -142,6 +200,35 @@
 						} catch($excp){}
 
 						return $q.reject(reject);
+					},
+				};
+			}
+		])
+
+		.factory('utilModuleService', [
+			function(){
+				var local = {
+					'name': null,
+					'menu': null,
+				};
+
+				var service;
+				return service = {
+					'name': function(value){
+						if(arguments.length === 0){
+							return local.name;
+						} else{
+							local.name = value;
+							return service;
+						}
+					},
+					'menu': function(value){
+						if(arguments.length === 0){
+							return local.menu;
+						} else{
+							local.menu = value;
+							return service;
+						}
 					},
 				};
 			}
@@ -238,5 +325,40 @@
 
 			return $delegate.apply(undefined, args);
 		}
+	}
+
+	$httpDecorator.$inject = ['$delegate'];
+	function $httpDecorator($delegate){
+		function httpDeferUrl(requestConfig){
+			var self = this;
+			var args = [].slice.call(arguments, 0);
+			if(angular.isObject(requestConfig.url) && angular.isFunction(requestConfig.url.then)){
+				return requestConfig.url.then(function(url){
+					args[0].url = url;
+					return httpDeferUrl.apply(httpDeferUrl, args);
+				});
+			} else{
+				return $delegate.apply($delegate, args);
+			}
+		}
+
+		Object.keys($delegate).filter(function(key){
+			return (typeof $delegate[key] === 'function');
+		}).forEach(function(key){
+			httpDeferUrl[key] = function (url){
+				var self = this;
+				var args = [].slice.call(arguments, 0);
+				if(angular.isObject(url) && angular.isFunction(url.then)){
+					return url.then(function(url){
+						args[0] = url;
+						return httpDeferUrl[key].apply(self, args)
+					});
+				} else{
+					return $delegate[key].apply($delegate, args);
+				}
+			};
+		});
+
+		return httpDeferUrl;
 	}
 })(this, angular);

@@ -17,6 +17,8 @@
 				'alias' => "angular-module", 'module-id' => "start-up",
 			],
 
+			['rel' => 'menu', 'href' => $GLOBALS['_rest']->getModulePath('menu.json'), 'alias' => "menu"],
+
 			['rel' => 'layout', 'href' => $GLOBALS['_rest']->getModulePath('html/layout.html'), 'alias' => "layout"],
 
 			['rel' => 'module', 'href' => $GLOBALS['_rest']->getConfigUri('util'), 'alias' => "util"],

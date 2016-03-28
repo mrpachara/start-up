@@ -25,7 +25,7 @@
 			}
 		} else{
 			$GLOBALS['_rest']->setCacheLimit('nocache');
-			$GLOBALS['_grantservice']->authozExcp();
+			if($GLOBALS['_rest']->getService() !== 'menu.json') $GLOBALS['_grantservice']->authozExcp();
 
 			//require_once 'service/index.php';
 			include $service.'.php';

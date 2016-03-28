@@ -14,7 +14,7 @@
 	angular.injector(['ng'], true).invoke([
 		'$cacheFactory',
 		function($cacheFactory){
-			appConfig.constant('configCache', $cacheFactory('config-cache'));
+			//appConfig.constant('configCache', $cacheFactory('config-cache'));
 		}
 	]);
 

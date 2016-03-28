@@ -74,6 +74,8 @@
 
 			['rel' => 'template', 'href' => $GLOBALS['_rest']->getModulePath('html/popup-dialog.html'), 'alias' => "popup-dialog"],
 			['rel' => 'template', 'href' => $GLOBALS['_rest']->getModulePath('html/log-list.html'), 'alias' => "log-list"],
+			['rel' => 'template', 'href' => $GLOBALS['_rest']->getModulePath('html/search-form.html'), 'alias' => "search-form"],
+			['rel' => 'template', 'href' => $GLOBALS['_rest']->getModulePath('html/menu.html'), 'alias' => "menu"],
 		],
 	];
 

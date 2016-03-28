@@ -50,24 +50,40 @@
 
 		.run([
 			'$rootRouter',
-			function($rootRouter){
+			'utilModuleService',
+			'startUpService',
+			function($rootRouter, utilModuleService, startUpService){
 				$rootRouter.config([
+					{'path': '/home', 'name': 'Home', 'component': 'startUpHome', 'useAsDefault': true},
 					/*
-					{'path': '/login', 'name': 'OAuth2 Login', 'component': 'oauth2Login'},
 					{'path': '/tokeninfo', 'name': 'OAuth2 Info', 'component': 'oauth2tokeninfo'},
 					{'path': '/jwttoken', 'name': 'OAuth2 JWT Token', 'component': 'oauth2jwttoken'},
 					*/
 				]);
+
+				startUpService.promise.then(function(service){
+					return service.$$configService.$load('menu').then(function(data){
+						utilModuleService.menu(data);
+						return data;
+					});
+				});
 			}
 		])
 
 		.controller('AppController', AppController)
+
+		.component('startUpHome', {
+			'controller': StartUpHomeController,
+			'controllerAs': 'vm',
+			'template': '<h1>Test List</h1><pre>{{ vm.parmas|json:true }}</pre>',
+			'bindings': { '$router': '<' },
+		})
 	;
 
 	AppController.$inject= [
 		'$log', '$window', '$injector', '$q', '$interval',
 		'$mdMedia', '$mdSidenav', '$mdDialog',
-		'utilService', 'utilLogService',
+		'utilService', 'utilLogService', 'utilSearchService', 'utilModuleService',
 		'startUpService', 'oauth2Service',
 	];
 	function AppController(){
@@ -90,6 +106,8 @@
 		vm.$mdMedia = vm.$$di.$mdMedia;
 		vm.$mdSidenav = vm.$$di.$mdSidenav;
 		vm.utilService = vm.$$di.utilService;
+		vm.utilSearchService = vm.$$di.utilSearchService;
+		vm.utilModuleService = vm.$$di.utilModuleService;
 
 		vm.$$di.oauth2Service.info().then(
 			function(data){
@@ -125,6 +143,25 @@
 		},
 		'name': function(){
 			return this.$$local.config.appName;
+		},
+	});
+
+	StartUpHomeController.$inject = ['utilSearchService', 'utilModuleService'];
+	function StartUpHomeController(){
+		var vm = this;
+		var args = arguments;
+		vm.$$di = {};
+		angular.forEach(StartUpHomeController.$inject, function(value, key){
+			vm.$$di[value] = args[key];
+		});
+	}
+	angular.extend(StartUpHomeController.prototype, {
+		'$routerOnActivate': function(next, previous){
+			var vm = this;
+
+			vm.parmas = next.params;
+			vm.$$di.utilSearchService.enabled(true);
+			vm.$$di.utilModuleService.name('Home');
 		},
 	});
 })(this, this.angular);
