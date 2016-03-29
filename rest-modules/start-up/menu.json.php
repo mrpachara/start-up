@@ -3,7 +3,7 @@
 		header(((isset($_SERVER['SERVER_PROTOCOL']))? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0')." 404 Not Found");
 		exit;
 	}
-sleep(3);
+sleep(1);
 	header("Content-Type: application/json; charset=utf-8");
 ?>
 {
@@ -20,7 +20,7 @@ sleep(3);
 		},
 		{
 			"name": "Menu 01",
-			"action": "xxx",
+			"action": "toggle",
 			"items": [
 				{
 					"name": "Sub-Menu 01",
@@ -38,7 +38,7 @@ sleep(3);
 		},
 		{
 			"name": "Menu 02",
-			"action": "xxx",
+			"action": "toggle",
 			"items": [
 				{
 					"name": "Sub-Menu 01",
@@ -46,7 +46,21 @@ sleep(3);
 				},
 				{
 					"name": "Sub-Menu 02",
-					"action": "xxx"
+					"action": "toggle",
+					"items": [
+						{
+							"name": "Sub-Menu 02.01",
+							"action": "xxx"
+						},
+						{
+							"name": "Sub-Menu 02.02",
+							"action": "xxx"
+						},
+						{
+							"name": "Sub-Menu 02.03",
+							"action": "xxx"
+						}
+					]
 				},
 				{
 					"name": "Sub-Menu 03",

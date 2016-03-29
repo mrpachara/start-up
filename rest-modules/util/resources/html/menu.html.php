@@ -6,6 +6,6 @@
 ?>
 <ul>
 	<li ng-repeat="item in menu.item().items">
-		<util-menu-item data="item"></util-menu-item>
+		<util-menu-item data="item" index="$index"></util-menu-item>
 	</li>
 </ul>

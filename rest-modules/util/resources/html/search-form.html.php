@@ -4,7 +4,7 @@
 		exit;
 	}
 ?>
-<form method="get" class="util-cp-search-box" ng-show="search.enabled()"
+<form ng-show="search.enabled()"
 	ng-submit="search.submit()" layout="row" layout-align="end center" style="width: 100%;">
 	<md-button type="button" class="md-icon-button" aria-label="show search" ng-click="search.active($event)">
 		<md-icon md-svg-icon="action:ic-search" alt="search"></md-icon>

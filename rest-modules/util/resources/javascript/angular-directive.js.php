@@ -50,6 +50,9 @@
 		})
 
 		.component('utilMenu', {
+			'require': {
+				'utilMenuCtrl': '?^^utilMenu',
+			},
 			'templateUrl': ['utilService', function(utilService){
 				return utilService.promise.then(function(service){
 					return service.template('menu');
@@ -59,12 +62,13 @@
 			'controllerAs': 'menu',
 			'bindings': {
 				'service': '=',
+				'data': '=',
 			},
 		})
 
 		.component('utilMenuItem', {
 			'require': {
-				'utilMenuCtrl': '^utilMenu',
+				'utilMenuCtrl': '^^utilMenu',
 			},
 			'templateUrl': ['utilService', function(utilService){
 				return utilService.promise.then(function(service){
@@ -75,6 +79,7 @@
 			'controllerAs': 'menuItem',
 			'bindings': {
 				'data': '=',
+				'index': '=',
 			},
 		})
 	;
@@ -114,7 +119,7 @@
 			vm.service.activated(true);
 
 			vm.$$di.$timeout(function(){
-				var textElem = angular.element(ev.target).closest('.util-cp-search-box').find('input[name="term"]');
+				var textElem = angular.element(ev.target).closest('util-search').find('input[name="term"]');
 				textElem.focus();
 			});
 		},
@@ -131,10 +136,52 @@
 		angular.forEach(UtilSearchController.$inject, function(value, key){
 			vm.$$di[value] = args[key];
 		});
+
+		vm.$$local = {
+			'depth': 0,
+			'selected': null,
+		};
 	}
 	angular.extend(UtilMenuController.prototype, {
+		'$onInit': function(){
+			var vm = this;
+			if(vm.utilMenuCtrl) vm.$$local.depth = vm.utilMenuCtrl.depth() + 1;
+		},
 		'item': function(){
 			return (this.service)? this.service.menu() : this.data;
+		},
+		'depth': function(){
+			return this.$$local.depth;
+		},
+		'isExpand': function(){
+			var vm = this;
+			var data = vm.item();
+			return !!(!vm.utilMenuCtrl || (data.action !== 'toggle') || (vm.utilMenuCtrl.selected() === vm.index));
+		},
+		'selected': function(value){
+			var vm = this;
+			if(arguments.length === 0){
+				return vm.$$local.selected;
+			} else{
+				vm.$$local.selected = value;
+			}
+		},
+		'action': function(ev){
+			var vm = this;
+			if(!vm.utilMenuCtrl) return;
+
+			var data = vm.item();
+			if(data.action === 'toggle'){
+				if(vm.utilMenuCtrl.selected() === vm.index){
+					vm.utilMenuCtrl.selected(null);
+				} else{
+					vm.utilMenuCtrl.selected(vm.index);
+				}
+
+				ev.stopPropagation();
+			} else{
+
+			}
 		},
 	});
 })(this, angular);

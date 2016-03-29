@@ -1,9 +1,9 @@
 <?php
-	require_once 'vendor/autoload.php';
+	require_once __DIR__.'/'.'vendor/autoload.php';
 
-	require_once 'infra.inc.php';
+	require_once __DIR__.'/'.'infra.inc.php';
 
-	require_once 'oauth2-server-config.php';
+	require_once __DIR__.'/'.'oauth2-server-config.php';
 
 	define('REST', true);
 
@@ -46,8 +46,8 @@
 	//if($GLOBALS['_rest']->getService() != 'view') sleep(1);
 	//sleep(1);
 
-	if(($GLOBALS['_rest']->getModule() != null) && (file_exists($infra['rest']['path'].$GLOBALS['_rest']->getModule()."/index.php"))){
-		require_once $infra['rest']['path'].$GLOBALS['_rest']->getModule()."/index.php";
+	if(($GLOBALS['_rest']->getModule() != null) && (file_exists(__DIR__.'/'.$infra['rest']['path'].$GLOBALS['_rest']->getModule()."/index.php"))){
+		require_once __DIR__.'/'.$infra['rest']['path'].$GLOBALS['_rest']->getModule()."/index.php";
 	} else{
 		throw new \sys\HttpNotFoundException(
 			new \Exception('module: '.$GLOBALS['_rest']->getModule()." not found", 0)

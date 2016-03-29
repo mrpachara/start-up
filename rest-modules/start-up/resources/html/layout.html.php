@@ -24,7 +24,7 @@
 			<!-- ng-controller="NavController as nav" -->
 			<md-content id="app-ly-container-navigation" flex layout="column">
 				<nav id="app-cp-navigation" ng-click="app.$mdSidenav('app-cp-side-nav').close()" style="width=100%;">
-					<util-menu service="app.utilModuleService" style="width: 100%;"></util-menu>
+					<util-menu service="app.utilModuleService"></util-menu>
 				</nav>
 			</md-content>
 		</aside>
