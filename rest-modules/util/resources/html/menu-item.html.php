@@ -10,7 +10,9 @@
 		ng-style="{'padding-left': (12*(menuItem.depth() - 1) + 6) + 'px'}">
 		<span>{{ menuItem.item().name }}</span>
 		<span flex></span>
-		<md-icon md-svg-icon="navigation:ic-menu" alt="navigation menu"></md-icon>
+		<md-icon ng-if="menuItem.item().action === 'toggle'" md-svg-icon="navigation:ic-expand-less"
+			class="util-menu-toggle-icon" ng-class="{'util-menu-toggle-expand': menuItem.isExpand()}"
+			alt="navigation menu"></md-icon>
 	</md-button>
 	<util-menu ng-if="menuItem.item().items" ng-show="menuItem.isExpand()" data="menuItem.item()"></util-menu>
 </div>

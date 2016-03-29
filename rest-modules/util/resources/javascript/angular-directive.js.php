@@ -136,7 +136,6 @@
 		angular.forEach(UtilSearchController.$inject, function(value, key){
 			vm.$$di[value] = args[key];
 		});
-
 		vm.$$local = {
 			'depth': 0,
 			'selected': null,
@@ -146,6 +145,9 @@
 		'$onInit': function(){
 			var vm = this;
 			if(vm.utilMenuCtrl) vm.$$local.depth = vm.utilMenuCtrl.depth() + 1;
+		},
+		'$postLink': function(){
+console.debug('xxxx', this, arguments);
 		},
 		'item': function(){
 			return (this.service)? this.service.menu() : this.data;

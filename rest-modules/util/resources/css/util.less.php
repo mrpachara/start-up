@@ -4,6 +4,20 @@
 		exit;
 	}
 ?>
+._p(@prop, @value) {
+	-webkit-@{prop}: @value;
+	-ms-@{prop}: @value;
+	-o-@{prop}: @value;
+	@{prop}: @value;
+}
+
+._v(@prop, @value) {
+	@{prop}: ~"-webkit-@{value}";
+	@{prop}: ~"-ms-@{value}";
+	@{prop}: ~"-o-@{value}";
+	@{prop}: @value;
+}
+
 .util-layout{
 	display: block;
 	margin: 0px;
@@ -41,6 +55,34 @@ util-menu {
 			margin: 0px !important;
 
 			border-radius: 0px !important;
+
+			.util-menu-toggle-icon.util-menu-toggle-expand {
+				._p(transition, all @util-menu-time ease);
+				._p(transform, rotateX(0.5turn));
+			}
+		}
+	}
+}
+
+@util-menu-time: 0.5s;
+util-menu {
+	overflow: hidden;
+
+	&.ng-hide-add,
+	&.ng-hide-remove {
+		._p(transition, all @util-menu-time ease);
+
+		&>* {
+			._p(transition, margin-top @util-menu-time ease);
+		}
+
+	}
+
+	&.ng-hide-add.ng-hide-add-active,
+	&.ng-hide-remove:not(.ng-hide-remove-active) {
+		&>* {
+			margin-top: -100%;
+			/*margin-top: -attr(menu-height px);*/
 		}
 	}
 }
