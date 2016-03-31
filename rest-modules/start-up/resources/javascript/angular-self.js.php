@@ -12,9 +12,13 @@
 		'ngMessages', 'ngSanitize', 'ngMaterial',
 		'util', 'oauth2', 'start-up',
 	])
+		.value('$routerRootComponent', 'body')
+
 		.config([
-			'$locationProvider', 'oauth2ServiceProvider',
-			function($locationProvider, oauth2ServiceProvider){
+			'$provide', '$locationProvider', 'oauth2ServiceProvider',
+			function($provide, $locationProvider, oauth2ServiceProvider){
+				//$provide.value('$routerRootComponent', 'main');
+
 				$locationProvider.html5Mode(true);
 
 				oauth2ServiceProvider.setClient({'client_id': 'web_client'});
@@ -55,10 +59,6 @@
 			function($rootRouter, utilModuleService, startUpService){
 				$rootRouter.config([
 					{'path': '/home', 'name': 'Home', 'component': 'startUpHome', 'useAsDefault': true},
-					/*
-					{'path': '/tokeninfo', 'name': 'OAuth2 Info', 'component': 'oauth2tokeninfo'},
-					{'path': '/jwttoken', 'name': 'OAuth2 JWT Token', 'component': 'oauth2jwttoken'},
-					*/
 				]);
 
 				startUpService.promise.then(function(service){
@@ -69,6 +69,19 @@
 				});
 			}
 		])
+
+		.component('body', {
+			'controller': AppController,
+			'controllerAs': 'app',
+			'templateUrl': [
+				'startUpService',
+				function(startUpService){
+					return startUpService.promise.then(function(service){
+						return service.layout('layout');
+					});
+				}
+			],
+		})
 
 		.component('startUpHome', {
 			'controller': StartUpHomeController,
@@ -145,8 +158,8 @@
 		//}, 3000);
 	}
 	angular.extend(AppController.prototype, {
-		'layout': function(){
-			return (this.$$local.user)? this.$$di.startUpService.layout('layout') : null;
+		'isAuthenticated': function(){
+			return !!(this.$$local.user);
 		},
 		'name': function(){
 			return this.$$local.config.appName;

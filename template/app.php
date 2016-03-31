@@ -9,7 +9,7 @@
 	//header("Content-Type: text/plain; charset=UTF-8");
 ?>
 <!DOCTYPE html>
-<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" ng-controller="AppController as app">
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
 		<meta charset="UTF-8" />
@@ -46,7 +46,7 @@
 
 		<script type="application/javascript" src="<?= htmlspecialchars(BASEPATH) ?>js/app-bootstrap.js"></script>
 	</head>
-	<body ng-include="app.layout()">
+	<body>
 		<div id="app-cp-loading" class="app-ly-app" style="height: 100%;">
 			<style type="text/css" scoped="scoped" style="display: none !important;">
 #app-cp-loading {

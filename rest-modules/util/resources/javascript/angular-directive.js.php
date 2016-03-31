@@ -12,6 +12,19 @@
 		'ngMaterial',
 		'util',
 	])
+		.directive('utilId', [
+			function(){
+				var drtv;
+				return drtv = {
+					'restrict': 'A',
+					'priority': 400,
+					'link': function(scope, elem, attrs){
+						attrs.$set('id', attrs.utilId);
+					},
+				};
+			}
+		])
+
 		.directive('utilAutofocus', [
 			'$timeout',
 			function($timeout){
@@ -51,7 +64,7 @@
 
 		.component('utilMenu', {
 			'require': {
-				'utilMenuCtrl': '?^^utilMenu',
+				'menuCtrl': '?^^utilMenu',
 			},
 			'templateUrl': ['utilService', function(utilService){
 				return utilService.promise.then(function(service){
@@ -69,7 +82,7 @@
 
 		.component('utilMenuItem', {
 			'require': {
-				'utilMenuCtrl': '^^utilMenu',
+				'menuCtrl': '^^utilMenu',
 			},
 			'templateUrl': ['utilService', function(utilService){
 				return utilService.promise.then(function(service){
@@ -141,15 +154,18 @@
 			'depth': 0,
 			'selected': null,
 			'menuHeight': null,
+			'element': null,
 		};
 	}
 	angular.extend(UtilMenuController.prototype, {
 		'$onInit': function(){
 			var vm = this;
-			if(vm.utilMenuCtrl) vm.$$local.depth = vm.utilMenuCtrl.depth() + 1;
+			if(vm.menuCtrl) vm.$$local.depth = vm.menuCtrl.depth() + 1;
 		},
 		'$postLink': function(){
 			var vm = this;
+
+			if(vm.id) vm.$$local.element = angular.element('#' + vm.id);
 		},
 		'item': function(){
 			return (this.service)? this.service.menu() : this.data;
@@ -160,7 +176,11 @@
 		'isExpand': function(){
 			var vm = this;
 			var data = vm.item();
-			return !!((vm.item() && vm.item().items) && (!vm.utilMenuCtrl || (data.action !== 'toggle') || (vm.utilMenuCtrl.selected() === vm.index)));
+			return !!((vm.item() && vm.item().items) && (!vm.menuCtrl || (data.action !== 'toggle') || (vm.menuCtrl.selected() === vm.index)));
+		},
+		'hasSubmenu': function(){
+			var item = this.item();
+			return !!(item && item.items);
 		},
 		'selected': function(value){
 			var vm = this;
@@ -175,11 +195,11 @@
 
 			var data = vm.item();
 			if(data.action === 'toggle'){
-				if(!vm.utilMenuCtrl) return;
-				if(vm.utilMenuCtrl.selected() === vm.index){
-					vm.utilMenuCtrl.selected(null);
+				if(!vm.menuCtrl) return;
+				if(vm.menuCtrl.selected() === vm.index){
+					vm.menuCtrl.selected(null);
 				} else{
-					vm.utilMenuCtrl.selected(vm.index);
+					vm.menuCtrl.selected(vm.index);
 				}
 			} else{
 				ev.originalEvent.commandComplete = true;
@@ -187,8 +207,10 @@
 		},
 		'menuHeight': function(){
 			var vm = this;
-			var $elem = angular.element('#' + vm.id);
-			if(($elem.length > 0) && ($elem.css('display') !== 'none')){
+
+			//var $elem = angular.element('#' + vm.id);
+			var $elem = vm.$$local.element;
+			if(($elem) && ($elem.length > 0) && ($elem.css('display') !== 'none')){
 				vm.$$local.menuHeight = $elem.outerHeight();
 			}
 

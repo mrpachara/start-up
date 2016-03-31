@@ -64,7 +64,7 @@ util-menu {
 	}
 }
 
-@util-menu-time: 0.5s;
+@util-menu-time: 0.25s;
 util-menu {
 	overflow: hidden;
 

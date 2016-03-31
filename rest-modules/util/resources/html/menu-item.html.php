@@ -14,5 +14,5 @@
 			class="util-menu-toggle-icon" ng-class="{'util-menu-toggle-expand': menuItem.isExpand()}"
 			alt="navigation menu"></md-icon>
 	</md-button>
-	<util-menu ng-attr-id="{{ menuItem.utilMenuCtrl.id + '_' + menuItem.index }}" ng-if="menuItem.item().items" ng-show="menuItem.isExpand()" data="menuItem.item()"></util-menu>
+	<util-menu util-id="{{ menuItem.menuCtrl.id + '_' + menuItem.index }}" ng-if="menuItem.hasSubmenu()" ng-show="menuItem.isExpand()" data="menuItem.item()"></util-menu>
 </div>

@@ -28,20 +28,41 @@
 
 		.component('service01Data01List', {
 			'controller': Service01Data01ListController,
-			'controllerAs': 'vm',
-			'template': 'Test List<pre>{{ vm|json:true }}</pre>',
+			'controllerAs': '$comp',
+			'templateUrl': [
+				'service01Service',
+				function(service01Service){
+					return service01Service.promise.then(function(service){
+						return service.template('list');
+					});
+				}
+			],
 		})
 
 		.component('service01Data01Item', {
 			'controller': Service01Data01ItemController,
-			'controllerAs': 'vm',
-			'template': 'Test Item {{ vm.getId() }}',
+			'controllerAs': '$comp',
+			'templateUrl': [
+				'service01Service',
+				function(service01Service){
+					return service01Service.promise.then(function(service){
+						return service.template('item');
+					});
+				}
+			],
 		})
 
 		.factory('service01ConfigLoader', [
 			'$ldrvn',
 			function($ldrvn){
 				return $ldrvn.loadConfig(<?= json_encode($GLOBALS['_rest']->getConfigUri()) ?>);
+			}
+		])
+
+		.factory('service01Service', [
+			'$ldrvn', 'service01ConfigLoader',
+			function($ldrvn, service01ConfigLoader){
+				return $ldrvn.createService(service01ConfigLoader, {});
 			}
 		])
 

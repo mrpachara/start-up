@@ -4,7 +4,7 @@
 		exit;
 	}
 ?>
-<div layout="row" flex class="app-ly-app" style="height: 100%;">
+<div ng-if="app.isAuthenticated()" layout="row" flex class="app-ly-app" style="height: 100%;">
 	<md-sidenav md-component-id="app-cp-side-nav" md-is-locked-open="app.$mdMedia('gt-md')"
 		class="md-sidenav-left md-whiteframe-z2" layout="column">
 		<!-- ng-controller="SidenavController as sidenav" -->
@@ -25,7 +25,7 @@
 			<md-content id="app-ly-container-navigation" flex layout="column">
 				<nav id="app-cp-navigation" ng-click="$event.originalEvent.commandComplete && app.$mdSidenav('app-cp-side-nav').close()"
 					style="width=100%;">
-					<util-menu id="app-nav-menu" service="app.utilModuleService"></util-menu>
+					<util-menu util-id="app-nav-menu" service="app.utilModuleService"></util-menu>
 				</nav>
 			</md-content>
 		</aside>
@@ -73,10 +73,7 @@
 			<md-progress-linear id="app-cp-progress-loading" md-mode="indeterminate" ng-show="toolbar.appProgress.isLoading()" class="md-accent"></md-progress-linear>
 		</md-toolbar>
 		<md-content id="app-ly-container-content" layout="column" flex>
-			<!-- ng-controller="ContentController as content" -->
-			<main class="app-cp-content md-content md-padding" layout="column" flex>
-				<ng-outlet layout="column" flex></ng-outlet>
-			</main>
+			<main ng-outlet class="app-cp-content md-content md-padding" layout="column" flex></main>
 		</md-content>
 	</div>
 </div>

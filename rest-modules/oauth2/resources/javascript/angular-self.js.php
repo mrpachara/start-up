@@ -13,6 +13,8 @@
 		'util', 'util.controller', 'util.directive',
 		'oauth2',
 	])
+		.value('$routerRootComponent', 'body')
+
 		.config([
 			'$locationProvider', 'oauth2ServiceProvider',
 			function($locationProvider, oauth2ServiceProvider){
@@ -61,6 +63,19 @@
 				]);
 			}
 		])
+
+		.component('body', {
+			'controller': AppController,
+			'controllerAS': 'app',
+			'templateUrl': [
+				'oauth2Service',
+				function(oauth2Service){
+					return oauth2Service.promise.then(function(service){
+						return service.layout('layout');
+					});
+				}
+			],
+		})
 
 		.component('oauth2Login', {
 			'controller': Oauth2LoginController,

@@ -3,7 +3,7 @@
 		header(((isset($_SERVER['SERVER_PROTOCOL']))? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0')." 404 Not Found");
 		exit;
 	}
-sleep(1);
+//sleep(1);
 	header("Content-Type: application/json; charset=utf-8");
 ?>
 {
