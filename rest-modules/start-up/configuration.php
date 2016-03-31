@@ -21,6 +21,8 @@
 
 			['rel' => 'layout', 'href' => $GLOBALS['_rest']->getModulePath('html/layout.html'), 'alias' => "layout"],
 
+			['rel' => 'template', 'href' => $GLOBALS['_rest']->getModulePath('html/home.html'), 'alias' => "home"],
+
 			['rel' => 'module', 'href' => $GLOBALS['_rest']->getConfigUri('util'), 'alias' => "util"],
 			['rel' => 'module', 'href' => $GLOBALS['_rest']->getConfigUri('oauth2'), 'alias' => "oauth2"],
 			['rel' => 'module', 'href' => $GLOBALS['_rest']->getConfigUri('service01'), 'alias' => "service01"],

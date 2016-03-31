@@ -61,6 +61,7 @@
 			'controller': UtilMenuController,
 			'controllerAs': 'menu',
 			'bindings': {
+				'id': '@',
 				'service': '=',
 				'data': '=',
 			},
@@ -139,6 +140,7 @@
 		vm.$$local = {
 			'depth': 0,
 			'selected': null,
+			'menuHeight': null,
 		};
 	}
 	angular.extend(UtilMenuController.prototype, {
@@ -147,7 +149,7 @@
 			if(vm.utilMenuCtrl) vm.$$local.depth = vm.utilMenuCtrl.depth() + 1;
 		},
 		'$postLink': function(){
-console.debug('xxxx', this, arguments);
+			var vm = this;
 		},
 		'item': function(){
 			return (this.service)? this.service.menu() : this.data;
@@ -158,7 +160,7 @@ console.debug('xxxx', this, arguments);
 		'isExpand': function(){
 			var vm = this;
 			var data = vm.item();
-			return !!(!vm.utilMenuCtrl || (data.action !== 'toggle') || (vm.utilMenuCtrl.selected() === vm.index));
+			return !!((vm.item() && vm.item().items) && (!vm.utilMenuCtrl || (data.action !== 'toggle') || (vm.utilMenuCtrl.selected() === vm.index)));
 		},
 		'selected': function(value){
 			var vm = this;
@@ -170,20 +172,31 @@ console.debug('xxxx', this, arguments);
 		},
 		'action': function(ev){
 			var vm = this;
-			if(!vm.utilMenuCtrl) return;
 
 			var data = vm.item();
 			if(data.action === 'toggle'){
+				if(!vm.utilMenuCtrl) return;
 				if(vm.utilMenuCtrl.selected() === vm.index){
 					vm.utilMenuCtrl.selected(null);
 				} else{
 					vm.utilMenuCtrl.selected(vm.index);
 				}
-
-				ev.stopPropagation();
 			} else{
-
+				ev.originalEvent.commandComplete = true;
 			}
+		},
+		'menuHeight': function(){
+			var vm = this;
+			var $elem = angular.element('#' + vm.id);
+			if(($elem.length > 0) && ($elem.css('display') !== 'none')){
+				vm.$$local.menuHeight = $elem.outerHeight();
+			}
+
+			if((vm.$$local.menuHeight === null) && (vm.item()) && angular.isArray(vm.item().items)){
+				vm.$$local.menuHeight = vm.item().items.length * 36;
+			}
+
+			return vm.$$local.menuHeight;
 		},
 	});
 })(this, angular);

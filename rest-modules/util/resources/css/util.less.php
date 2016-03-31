@@ -81,7 +81,8 @@ util-menu {
 	&.ng-hide-add.ng-hide-add-active,
 	&.ng-hide-remove:not(.ng-hide-remove-active) {
 		&>* {
-			margin-top: -100%;
+			/*must specific in script to determime outter-height*/
+			/*margin-top: -100%;*/
 			/*margin-top: -attr(menu-height px);*/
 		}
 	}

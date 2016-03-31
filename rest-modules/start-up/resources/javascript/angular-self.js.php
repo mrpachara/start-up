@@ -70,14 +70,21 @@
 			}
 		])
 
-		.controller('AppController', AppController)
-
 		.component('startUpHome', {
 			'controller': StartUpHomeController,
-			'controllerAs': 'vm',
-			'template': '<h1>Test List</h1><pre>{{ vm.parmas|json:true }}</pre>',
+			'controllerAs': '$comp',
+			'templateUrl': [
+				'startUpService',
+				function(startUpService){
+					return startUpService.promise.then(function(service){
+						return service.template('home');
+					});
+				}
+			],
 			'bindings': { '$router': '<' },
 		})
+
+		.controller('AppController', AppController)
 	;
 
 	AppController.$inject= [
@@ -144,6 +151,9 @@
 		'name': function(){
 			return this.$$local.config.appName;
 		},
+		'debug': function(data){
+			this.$$di.$log.debug('app debug:', data);
+		},
 	});
 
 	StartUpHomeController.$inject = ['utilSearchService', 'utilModuleService'];
@@ -154,6 +164,10 @@
 		angular.forEach(StartUpHomeController.$inject, function(value, key){
 			vm.$$di[value] = args[key];
 		});
+
+		vm.$$local = {
+			'boxSize': 40,
+		};
 	}
 	angular.extend(StartUpHomeController.prototype, {
 		'$routerOnActivate': function(next, previous){
@@ -162,6 +176,12 @@
 			vm.parmas = next.params;
 			vm.$$di.utilSearchService.enabled(true);
 			vm.$$di.utilModuleService.name('Home');
+		},
+		'incBoxSize': function(){
+			this.$$local.boxSize+=10;
+		},
+		'boxSize': function(){
+			return this.$$local.boxSize;
 		},
 	});
 })(this, this.angular);
