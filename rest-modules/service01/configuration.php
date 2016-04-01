@@ -11,5 +11,9 @@
 			'rel' => 'module/javascript', 'href' => $GLOBALS['_rest']->getModulePath("javascript/angular-module.js"),
 			'alias' => "angular-module", 'module-id' => "service01",
 		],
+
+		['rel' => 'template', 'href' => $GLOBALS['_rest']->getModulePath('html/list.html'), 'alias' => "list"],
+		['rel' => 'template', 'href' => $GLOBALS['_rest']->getModulePath('html/view.html'), 'alias' => "view"],
+		['rel' => 'template', 'href' => $GLOBALS['_rest']->getModulePath('html/edit.html'), 'alias' => "edit"],
 	]);
 ?>

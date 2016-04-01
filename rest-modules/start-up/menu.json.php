@@ -11,12 +11,12 @@
 	"action": null,
 	"items": [
 		{
-			"name": "Action 01",
-			"action": "xxx"
+			"name": "Home",
+			"action": ["Home"]
 		},
 		{
-			"name": "Action 02",
-			"action": "xxx"
+			"name": "Data 01",
+			"action": ["Service01", "Data01", "List"]
 		},
 		{
 			"name": "Menu 01",
@@ -38,6 +38,38 @@
 		},
 		{
 			"name": "Menu 02",
+			"action": "toggle",
+			"items": [
+				{
+					"name": "Sub-Menu 01",
+					"action": "xxx"
+				},
+				{
+					"name": "Sub-Menu 02",
+					"action": "toggle",
+					"items": [
+						{
+							"name": "Sub-Menu 02.01",
+							"action": "xxx"
+						},
+						{
+							"name": "Sub-Menu 02.02",
+							"action": "xxx"
+						},
+						{
+							"name": "Sub-Menu 02.03",
+							"action": "xxx"
+						}
+					]
+				},
+				{
+					"name": "Sub-Menu 03",
+					"action": "xxx"
+				}
+			]
+		},
+		{
+			"name": "Menu 03",
 			"action": "toggle",
 			"items": [
 				{

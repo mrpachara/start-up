@@ -15,10 +15,8 @@
 		.value('$routerRootComponent', 'body')
 
 		.config([
-			'$provide', '$locationProvider', 'oauth2ServiceProvider',
-			function($provide, $locationProvider, oauth2ServiceProvider){
-				//$provide.value('$routerRootComponent', 'main');
-
+			'$locationProvider', 'oauth2ServiceProvider',
+			function($locationProvider, oauth2ServiceProvider){
 				$locationProvider.html5Mode(true);
 
 				oauth2ServiceProvider.setClient({'client_id': 'web_client'});

@@ -20,11 +20,26 @@
 			'$rootRouter',
 			function($rootRouter){
 				$rootRouter.config([
-					{'path': '/service01/data01', 'name': 'Service01 Data01 List', 'component': 'service01Data01List'},
-					{'path': '/service01/data01/:id', 'name': 'Service01 Data01 Item', 'component': 'service01Data01Item'},
+					{'path': '/service01/...', 'name': 'Service01', 'component': 'service01'},
 				]);
 			}
 		])
+
+		.component('service01', {
+			'template': '<ng-outlet></ng-outlet>',
+			'$routeConfig': [
+				{'path': '/data01/...', 'name': 'Data01', 'component': 'service01Data01'},
+			],
+		})
+
+		.component('service01Data01', {
+			'template': '<ng-outlet></ng-outlet>',
+			'$routeConfig': [
+				{'path': '/', 'name': 'List', 'component': 'service01Data01List', 'useAsDefault': true},
+				{'path': '/:id', 'name': 'View', 'component': 'service01Data01View'},
+				{'path': '/:id/edit', 'name': 'Edit', 'component': 'service01Data01Edit'},
+			],
+		})
 
 		.component('service01Data01List', {
 			'controller': Service01Data01ListController,
@@ -37,19 +52,41 @@
 					});
 				}
 			],
+			'bindings': {
+				'$router': '<',
+			},
 		})
 
-		.component('service01Data01Item', {
+		.component('service01Data01View', {
 			'controller': Service01Data01ItemController,
 			'controllerAs': '$comp',
 			'templateUrl': [
 				'service01Service',
 				function(service01Service){
 					return service01Service.promise.then(function(service){
-						return service.template('item');
+						return service.template('view');
 					});
 				}
 			],
+			'bindings': {
+				'$router': '<',
+			},
+		})
+
+		.component('service01Data01Edit', {
+			'controller': Service01Data01ItemController,
+			'controllerAs': '$comp',
+			'templateUrl': [
+				'service01Service',
+				function(service01Service){
+					return service01Service.promise.then(function(service){
+						return service.template('edit');
+					});
+				}
+			],
+			'bindings': {
+				'$router': '<',
+			},
 		})
 
 		.factory('service01ConfigLoader', [
@@ -100,9 +137,12 @@
 				});
 			});
 		},
+		'view': function(id){
+			this.$router.parent.navigate(['View', {'id': id}]);
+		},
 	});
 
-	Service01Data01ItemController.$inject = [];
+	Service01Data01ItemController.$inject = ['$location', '$mdDialog'];
 	function Service01Data01ItemController(){
 		var vm = this;
 		var args = arguments;
@@ -121,10 +161,33 @@
 
 			vm.$$local.params = next.params;
 		},
+		'$routerCanDeactivate': function(){
+			return (this.$router.hostComponent === 'service01Data01Edit')? this.$$di.$mdDialog.show(
+				this.$$di.$mdDialog.confirm()
+					.title('Do you want to discard change?')
+					.textContent('All your changed data will be lost')
+					.ok('Yes')
+					.cancel('Discard')
+			).then(
+				function(){
+					return true;
+				},
+				function(){
+					return false;
+				}
+			) : true;
+		},
 		'getId': function(){
 			var vm = this;
 
 			return vm.$$local.params.id;
+		},
+		'changeMode': function(name){
+			var vm = this;
+
+			vm.$router.parent.navigate([name, {'id': vm.$$local.params.id}]).then(function(){
+				vm.$$di.$location.replace();
+			});
 		},
 	});
 })(this, angular);

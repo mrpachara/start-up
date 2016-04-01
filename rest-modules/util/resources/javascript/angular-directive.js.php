@@ -9,7 +9,7 @@
 
 	var ngModule = angular.module(<?= json_encode($config->linkProp('angular-directive', 'module-id')) ?>, [
 		'ldrvn', 'ldrvn.service',
-		'ngMaterial',
+		'ngComponentRouter', 'ngMaterial',
 		'util',
 	])
 		.directive('utilId', [
@@ -142,12 +142,12 @@
 		}
 	});
 
-	UtilMenuController.$inject = [];
+	UtilMenuController.$inject = ['$rootRouter'];
 	function UtilMenuController(){
 		var vm = this;
 		var args = arguments;
 		vm.$$di = {};
-		angular.forEach(UtilSearchController.$inject, function(value, key){
+		angular.forEach(UtilMenuController.$inject, function(value, key){
 			vm.$$di[value] = args[key];
 		});
 		vm.$$local = {
@@ -201,8 +201,11 @@
 				} else{
 					vm.menuCtrl.selected(vm.index);
 				}
-			} else{
+			} else if(angular.isArray(data.action)){
+				vm.$$di.$rootRouter.navigate(data.action);
 				ev.originalEvent.commandComplete = true;
+			} else if(angular.isFunction(data.action)){
+				data.action(ev);
 			}
 		},
 		'menuHeight': function(){

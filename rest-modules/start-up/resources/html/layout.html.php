@@ -73,7 +73,7 @@
 			<md-progress-linear id="app-cp-progress-loading" md-mode="indeterminate" ng-show="toolbar.appProgress.isLoading()" class="md-accent"></md-progress-linear>
 		</md-toolbar>
 		<md-content id="app-ly-container-content" layout="column" flex>
-			<main ng-outlet class="app-cp-content md-content md-padding" layout="column" flex></main>
+			<main ng-outlet class="app-cp-content md-content md-padding"></main>
 		</md-content>
 	</div>
 </div>

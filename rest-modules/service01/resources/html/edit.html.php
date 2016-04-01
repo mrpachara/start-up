@@ -5,8 +5,8 @@
 	}
 ?>
 <article>
-	<h1>This is List</h1>
-	<md-button type="button" ng-click="$comp.view(7)">
-		<span>View 7</span>
+	<h1>This is Edit</h1>
+	<md-button type="button" ng-click="$comp.changeMode('View')">
+		<span>Cacel</span>
 	</md-button>
 </article>
