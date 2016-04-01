@@ -107,11 +107,10 @@
 			'$q', '$ldrvn', 'service01ConfigLoader',
 			function($q, $ldrvn, service01ConfigLoader){
 				return $ldrvn.createService(service01ConfigLoader, {
-					'load': function(){
-						var service = this;
-						if(angular.isUndefined(service.$$configService)) return $q.reject(new Error('Service not ready'));
-
-						return service.$$configService.$load('data01');
+					'load': function(params){
+						return this.promise.then(function(service){
+							return service.$$configService.$load('data01', params);
+						});
 					},
 				});
 			}
@@ -128,11 +127,11 @@
 		});
 	}
 	angular.extend(Service01Data01ListController.prototype, {
-		'$routerOnActivate': function(){
+		'$routerOnActivate': function(next, previous){
 			var vm = this;
 
 			return vm.$$di.service01Data01ListService.promise.then(function(service){
-				return service.load().then(function(model){
+				return service.load(next.params).then(function(model){
 					return angular.extend(vm, model);
 				});
 			});

@@ -9,4 +9,5 @@
 	<md-button type="button" ng-click="$comp.view(7)">
 		<span>View 7</span>
 	</md-button>
+	<pre>{{ $comp.self|json:true }}</pre>
 </article>
