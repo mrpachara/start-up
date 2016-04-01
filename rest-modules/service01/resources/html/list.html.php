@@ -5,9 +5,15 @@
 	}
 ?>
 <article>
-	<h1>This is List</h1>
-	<md-button type="button" ng-click="$comp.view(7)">
-		<span>View 7</span>
-	</md-button>
-	<pre>{{ $comp.self|json:true }}</pre>
+	<md-list class="md-dense">
+		<md-list-item ng-repeat-start="item in $comp.self" class="md-3-line md-long-text">
+			<md-icon md-svg-icon="action:ic-print" class="md-avatar"></md-icon>
+			<div class="md-list-item-text">
+				<h3>{{ item.code }}</h3>
+				<h4>{{ item.name }}</h4>
+				<p style="font-family: monospace; white-space: pre;">{{ item.data|json:true }}</p>
+			</div>
+		</md-list-item>
+		<md-divider ng-repeat-end></md-divider>
+	</md-list>
 </article>

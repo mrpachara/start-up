@@ -125,6 +125,8 @@
 		angular.forEach(Service01Data01ListController.$inject, function(value, key){
 			vm.$$di[value] = args[key];
 		});
+
+		vm.service = vm.$$di.service01Data01ListService;
 	}
 	angular.extend(Service01Data01ListController.prototype, {
 		'$routerOnActivate': function(next, previous){
