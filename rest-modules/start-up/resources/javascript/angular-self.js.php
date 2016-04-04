@@ -24,17 +24,19 @@
 				oauth2ServiceProvider.setStorage([
 					'$window',
 					function($window){
+						var storage = $window.sessionStorage;
+						var prefix = 'oauth2-';
 						return {
 							'prop': function(name, value){
 								if(arguments.length === 2){
-									$window.sessionStorage.setItem(name, value);
+									storage.setItem(prefix + name, value);
 								} else{
-									return $window.sessionStorage.getItem(name);
+									return storage.getItem(prefix + name);
 								}
 							},
 							'remove': function(name){
-								if($window.sessionStorage.getItem(name)){
-									$window.sessionStorage.removeItem(name);
+								if(storage.getItem(prefix + name)){
+									storage.removeItem(prefix + name);
 
 									return true;
 								} else{
@@ -42,7 +44,16 @@
 								}
 							},
 							'clear': function(){
-								$window.sessionStorage.clear();
+								//$window.sessionStorage.clear();
+								var matchedKeys = [];
+								for(var i, len = storage.length; i < len; i++){
+									var key = storage.key(i);
+									if(key.indexOf(prefix) === 0) matchKeys.push(key);
+								}
+
+								angular.forEach(matchedKeys, function(key){
+									storage.removeItem(key);
+								});
 							},
 						};
 					}
