@@ -29,6 +29,10 @@
 			$GLOBALS['_grantservice']->authozExcp();
 
 			//require_once 'service/index.php';
+			if($GLOBALS['_rest']->isMethod(['PUT', 'DELETE'])){
+				sleep(5);
+				//if($GLOBALS['_rest']->isMethod('DELETE')) throw new Exception('stub error');
+			}
 			require_once __DIR__.'/../../vendor/mrpachara/php-lib/test/rest-modules/service01/index.php';
 		}
 	} catch(\sys\DataServiceException $excp){

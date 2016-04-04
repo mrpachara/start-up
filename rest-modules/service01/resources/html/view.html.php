@@ -7,7 +7,9 @@
 <article class="md-content md-padding">
 	<div layout="row">
 		<div>
-			<md-button type="button" ng-repeat="link in $comp.links.$links('action')" ng-click="$comp.action(link)">
+			<md-button type="button" ng-repeat="link in $comp.links.$links('action')"
+				class="{{ (link.class)? 'md-' + link.class : '' }}"
+				ng-click="$comp.action(link)">
 				<md-icon md-svg-icon="{{ link.icon }}"></md-icon>
 				<span>{{ link.title }}</span>
 			</md-button>

@@ -6,7 +6,7 @@
 ?>
 <article class="md-content md-padding">
 	<form name="itemForm" ng-submit="$comp.submit()">
-		<fieldset>
+		<fieldset ng-init="$comp.setForm(itemForm)" ng-disabled="$comp.progress.count()">
 			<div layout="column">
 				<div layout="column" layout-gt-sm="row">
 					<md-input-container ng-style="($comp.$mdMedia('gt-sm'))? {'width': '15rem'} : {} ">

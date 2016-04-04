@@ -145,7 +145,7 @@
 		});
 
 		vm.$$local = {
-			'linkService': null,
+			'formCtrl': null,
 		};
 
 		vm.service = vm.$$di.service01Data01ListService;
@@ -172,9 +172,9 @@
 	});
 
 	Service01Data01ItemController.$inject = [
-		'$window', '$timeout', '$location',
+		'$window', '$timeout', '$location', '$q',
 		'$mdDialog', '$mdMedia',
-		'$ldrvn',
+		'$ldrvn', 'util',
 		'service01Data01ItemService',
 		'utilModuleService',
 	];
@@ -191,6 +191,7 @@
 		};
 
 		vm.service = vm.$$di.service01Data01ItemService;
+		vm.progress = vm.$$di.util.createProgress();
 		vm.$mdMedia = vm.$$di.$mdMedia;
 	}
 	angular.extend(Service01Data01ItemController.prototype, {
@@ -212,7 +213,7 @@
 			});
 		},
 		'$routerCanDeactivate': function(){
-			return (this.$router.hostComponent === 'service01Data01Edit')? this.$$di.$mdDialog.show(
+			return (this.$$local.formCtrl && this.$$local.formCtrl.$dirty)? this.$$di.$mdDialog.show(
 				this.$$di.$mdDialog.confirm()
 					.title('Do you want to discard change?')
 					.textContent('All your changed data will be lost')
@@ -227,6 +228,9 @@
 				}
 			) : true;
 		},
+		'setForm': function(formCtrl){
+			this.$$local.formCtrl = formCtrl;
+		},
 		'action': function(link){
 			var vm = this;
 			if(angular.isArray(link.action)){
@@ -234,7 +238,20 @@
 			} else if(angular.isString(link.action)){
 				return vm.changeMode(link.action);
 			} else{
-				return vm.links.$load(link.alias);
+				return (((link.confirm) || (link.class && (link.class.split(/\s+/g).indexOf('warn') >= 0)))?
+					vm.$$di.$mdDialog.show(vm.$$di.$mdDialog.confirm()
+						.title((link.confirm)? link.confirm : 'Do you want to ' + link.title + '?')
+						.textContent((link.message)? link.message : 'Your action cannot be cancel later')
+						.ok('Yes')
+						.cancel('Cancel')
+					) : vm.$$di.$q.when()
+				).then(function(){
+					return vm.links.$load(link.alias).then(function(data){
+console.debug(vm.$router);
+console.debug(vm.$router.currentInstruction, vm.$router.isRouteActive(vm.$router));
+						if(data.status && (data.status == 'deleted') && (data.uri === vm.uri)) vm.back();
+					});
+				});
 			}
 		},
 		'back': function(ev){
@@ -244,12 +261,27 @@
 			var vm = this;
 
 			return vm.$router.navigateByInstruction(vm.$router.generate([name, {'id': vm.self.id}]), true);
+			/* if want to change URL but use replaceStage using following code
+			return vm.$router.naviage([name, {'id': vm.self.id}]).then(function(){
+				vm.$$di.$location.replace();
+			});
+			*/
 		},
 		'submit': function(){
 			var vm = this;
 
 			vm.self.data = angular.fromJson(vm.self.$data);
-			vm.links.$send('save', vm.self);
+
+			var dirty = vm.$$local.formCtrl.$dirty;
+			vm.$$local.formCtrl.$setPristine();
+			vm.progress.process(vm.links.$send('save', vm.self).then(
+				function(){
+					vm.changeMode('View');
+				},
+				function(){
+					if(dirty) vm.$$local.formCtrl.$setDirty();
+				}
+			));
 		},
 	});
 })(this, angular);
