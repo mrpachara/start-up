@@ -7,7 +7,6 @@
 <div ng-if="app.isAuthenticated()" layout="row" flex class="app-ly-app" style="height: 100%;">
 	<md-sidenav md-component-id="app-cp-side-nav" md-is-locked-open="app.$mdMedia('gt-md')"
 		class="md-sidenav-left md-whiteframe-z2" layout="column">
-		<!-- ng-controller="SidenavController as sidenav" -->
 		<aside id="app-cp-side-nav"
 			md-swipe-left="app.$mdSidenav('app-cp-side-nav').close()"
 			flex layout="column" class="app-cl-layout">
@@ -23,7 +22,7 @@
 			</md-toolbar>
 			<!-- ng-controller="NavController as nav" -->
 			<md-content id="app-ly-container-navigation" flex layout="column">
-				<nav id="app-cp-navigation" ng-click="$event.originalEvent.commandComplete && app.$mdSidenav('app-cp-side-nav').close()"
+				<nav id="app-cp-navigation" ng-click="$event.originalEvent.commandComplete &amp;&amp; app.$mdSidenav('app-cp-side-nav').close()"
 					style="width=100%;">
 					<util-menu util-id="app-nav-menu" service="app.utilModuleService"></util-menu>
 				</nav>
@@ -48,16 +47,17 @@
 					<util-search service="app.utilSearchService" flex></util-search>
 				</div>
 				<md-menu>
-					<md-button type="button" class="md-icon-button" aria-label="more action" ng-click="$mdOpenMenu()">
+					<md-button type="button" class="md-icon-button" aria-label="more action" ng-click="$mdOpenMenu($event)">
 						<md-icon md-menu-origin md-svg-icon="navigation:ic-more-vert" alt="more vertical"></md-icon>
 					</md-button>
 					<md-menu-content width="4" style="padding-top: 0px;">
-						<md-menu-item>
-							<div layout="row" layout-align="start center" style="padding-right: 8px;">
+						<md-menu-item style="height: 36px; min-height: 36px;">
+							<h4 layout="row" layout-align="start center" style="padding-right: 0px;">
 								<span>Command</span>
 								<span flex></span>
-								<md-icon md-menu-align-target md-svg-icon="navigation:ic-more-vert" alt="more action"></md-icon>
-							</div>
+								<md-icon md-menu-align-target md-svg-icon="navigation:ic-more-vert" alt="more action"
+									style="margin-right: 0px;"></md-icon>
+							</h4>
 						</md-menu-item>
 						<md-menu-divider style="margin-top: 0px;"></md-menu-divider>
 						<md-menu-item>
@@ -73,7 +73,7 @@
 			<md-progress-linear id="app-cp-progress-loading" md-mode="indeterminate" ng-show="toolbar.appProgress.isLoading()" class="md-accent"></md-progress-linear>
 		</md-toolbar>
 		<md-content id="app-ly-container-content" layout="column" flex>
-			<main ng-outlet class="app-cp-content md-content md-padding"></main>
+			<main ng-outlet class="app-cp-content"></main>
 		</md-content>
 	</div>
 </div>

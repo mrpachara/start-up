@@ -17,3 +17,18 @@ md-input-container .md-input[disabled],
 [disabled] md-input-container .md-input{
 	margin-bottom: 0px !important;
 }
+
+/* BUG: angular-material md-icon that is child of md-menu has outline */
+md-menu>md-icon{
+	outline: none;
+}
+
+/* BUG: html5 has some problem for fieldset tag within form tag */
+fieldset{
+	display: block;
+	margin: 0px;
+	padding: 0px;
+	outline: none;
+
+	border: none;
+}

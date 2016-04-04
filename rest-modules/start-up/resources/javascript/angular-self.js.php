@@ -75,7 +75,7 @@
 				'startUpService',
 				function(startUpService){
 					return startUpService.promise.then(function(service){
-						return service.layout('layout');
+						return service.template('layout');
 					});
 				}
 			],
@@ -167,7 +167,7 @@
 		},
 	});
 
-	StartUpHomeController.$inject = ['utilSearchService', 'utilModuleService'];
+	StartUpHomeController.$inject = ['$timeout', 'utilSearchService', 'utilModuleService'];
 	function StartUpHomeController(){
 		var vm = this;
 		var args = arguments;
@@ -184,9 +184,11 @@
 		'$routerOnActivate': function(next, previous){
 			var vm = this;
 
-			vm.parmas = next.params;
-			vm.$$di.utilSearchService.enabled(true);
-			vm.$$di.utilModuleService.name('Home');
+			/* change some property may be defer executed */
+			vm.$$di.$timeout(function(){
+				vm.$$di.utilSearchService.enabled(true);
+				vm.$$di.utilModuleService.name('Home');
+			}, 10);
 		},
 		'incBoxSize': function(){
 			this.$$local.boxSize+=10;

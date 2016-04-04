@@ -5,6 +5,7 @@
 
 	require_once __DIR__.'/'.'oauth2-server-config.php';
 
+	define('DEBUG_LEVEL', $infra['debug']['level']);
 	define('REST', true);
 
 	ini_set('display_errors', 0);
@@ -12,8 +13,7 @@
 	header("Access-Control-Allow-Origin: *");
 
 	function exception_handler($excp){
-		global $infra;
-		\sys\Rest::response($excp, null, null, null, $infra['debug']['level']);
+		\sys\Rest::response($excp, null, null, null, DEBUG_LEVEL);
 	}
 	set_exception_handler('exception_handler');
 
@@ -27,13 +27,12 @@
 	set_error_handler('exception_error_handler');
 
 	function shutdown_handler(){
-		global $infra;
 		if(($error = error_get_last()) && (($error['type'] & (
 			E_ERROR | E_PARSE | E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_COMPILE_WARNING | E_STRICT
 		)) > 0)){
 			\sys\Rest::response(
 				new \ErrorException($error['message'], 0, $error['type'], $error['file'], $error['line'])
-			, null, null, null, $infra['debug']['level']);
+			, null, null, null, DEBUG_LEVEL);
 		}
 	}
 	register_shutdown_function('shutdown_handler');

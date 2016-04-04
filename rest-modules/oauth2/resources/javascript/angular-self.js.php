@@ -71,7 +71,7 @@
 				'oauth2Service',
 				function(oauth2Service){
 					return oauth2Service.promise.then(function(service){
-						return service.layout('layout');
+						return service.template('layout');
 					});
 				}
 			],
@@ -102,9 +102,6 @@
 		});
 	}
 	angular.extend(AppController.prototype, {
-		'layout': function(){
-			return this.$$di.oauth2Service.layout('layout');
-		}
 	});
 
 	Oauth2LoginController.$inject = [

@@ -4,7 +4,7 @@
 		exit;
 	}
 ?>
-<article>
+<article class="md-content md-padding">
 	<md-button type="button" ng-click="$comp.incBoxSize()">
 		<span>++</span>
 	</md-button>

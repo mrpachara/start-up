@@ -48,7 +48,7 @@
 				'service01Service',
 				function(service01Service){
 					return service01Service.promise.then(function(service){
-						return service.template('list');
+						return service.template('list.html');
 					});
 				}
 			],
@@ -64,7 +64,7 @@
 				'service01Service',
 				function(service01Service){
 					return service01Service.promise.then(function(service){
-						return service.template('view');
+						return service.template('view.html');
 					});
 				}
 			],
@@ -80,7 +80,7 @@
 				'service01Service',
 				function(service01Service){
 					return service01Service.promise.then(function(service){
-						return service.template('edit');
+						return service.template('edit.html');
 					});
 				}
 			],
@@ -115,9 +115,27 @@
 				});
 			}
 		])
+
+		.factory('service01Data01ItemService', [
+			'$q', '$ldrvn', 'service01ConfigLoader',
+			function($q, $ldrvn, service01ConfigLoader){
+				return $ldrvn.createService(service01ConfigLoader, {
+					'load': function(params){
+						return this.promise.then(function(service){
+							return service.$$configService.$load(['data01-item', params]);
+						});
+					},
+				});
+			}
+		])
 	;
 
-	Service01Data01ListController.$inject = ['service01Data01ListService'];
+	Service01Data01ListController.$inject = [
+		'$timeout',
+		'$ldrvn',
+		'service01Data01ListService',
+		'utilModuleService',
+	];
 	function Service01Data01ListController(){
 		var vm = this;
 		var args = arguments;
@@ -126,15 +144,25 @@
 			vm.$$di[value] = args[key];
 		});
 
+		vm.$$local = {
+			'linkService': null,
+		};
+
 		vm.service = vm.$$di.service01Data01ListService;
 	}
 	angular.extend(Service01Data01ListController.prototype, {
 		'$routerOnActivate': function(next, previous){
 			var vm = this;
 
-			return vm.$$di.service01Data01ListService.promise.then(function(service){
+			return vm.service.promise.then(function(service){
 				return service.load(next.params).then(function(model){
-					return angular.extend(vm, model);
+					vm.$$di.$timeout(function(){
+						vm.$$di.utilModuleService.name('Data01');
+					}, 10);
+
+					angular.extend(vm, model);
+					if(vm.links) vm.links = vm.$$di.$ldrvn.create(vm.links);
+					return vm;
 				});
 			});
 		},
@@ -143,7 +171,13 @@
 		},
 	});
 
-	Service01Data01ItemController.$inject = ['$location', '$mdDialog'];
+	Service01Data01ItemController.$inject = [
+		'$window', '$timeout', '$location',
+		'$mdDialog', '$mdMedia',
+		'$ldrvn',
+		'service01Data01ItemService',
+		'utilModuleService',
+	];
 	function Service01Data01ItemController(){
 		var vm = this;
 		var args = arguments;
@@ -155,20 +189,35 @@
 		vm.$$local = {
 			'params': {},
 		};
+
+		vm.service = vm.$$di.service01Data01ItemService;
+		vm.$mdMedia = vm.$$di.$mdMedia;
 	}
 	angular.extend(Service01Data01ItemController.prototype, {
 		'$routerOnActivate': function(next, previous){
 			var vm = this;
 
 			vm.$$local.params = next.params;
+			return vm.service.promise.then(function(service){
+				return service.load(vm.$$local.params).then(function(model){
+					vm.$$di.$timeout(function(){
+						vm.$$di.utilModuleService.name('Data01/' + model.self.id);
+					}, 10);
+
+					angular.extend(vm, model);
+					if(vm.links) vm.links = vm.$$di.$ldrvn.create(vm.links);
+					vm.self.$data = angular.toJson(vm.self.data, true);
+					return vm;
+				});
+			});
 		},
 		'$routerCanDeactivate': function(){
 			return (this.$router.hostComponent === 'service01Data01Edit')? this.$$di.$mdDialog.show(
 				this.$$di.$mdDialog.confirm()
 					.title('Do you want to discard change?')
 					.textContent('All your changed data will be lost')
-					.ok('Yes')
-					.cancel('Discard')
+					.ok('Discard')
+					.cancel('Cancel')
 			).then(
 				function(){
 					return true;
@@ -178,17 +227,29 @@
 				}
 			) : true;
 		},
-		'getId': function(){
+		'action': function(link){
 			var vm = this;
-
-			return vm.$$local.params.id;
+			if(angular.isArray(link.action)){
+				return vm.$router.navigate(link.action);
+			} else if(angular.isString(link.action)){
+				return vm.changeMode(link.action);
+			} else{
+				return vm.links.$load(link.alias);
+			}
+		},
+		'back': function(ev){
+			return this.$$di.$window.history.back();
 		},
 		'changeMode': function(name){
 			var vm = this;
 
-			vm.$router.parent.navigate([name, {'id': vm.$$local.params.id}]).then(function(){
-				vm.$$di.$location.replace();
-			});
+			return vm.$router.navigateByInstruction(vm.$router.generate([name, {'id': vm.self.id}]), true);
+		},
+		'submit': function(){
+			var vm = this;
+
+			vm.self.data = angular.fromJson(vm.self.$data);
+			vm.links.$send('save', vm.self);
 		},
 	});
 })(this, angular);

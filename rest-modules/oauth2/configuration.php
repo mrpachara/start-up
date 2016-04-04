@@ -17,8 +17,7 @@
 				'alias' => "angular-module", 'module-id' => "oauth2",
 			],
 
-			['rel' => 'layout', 'href' => $GLOBALS['_rest']->getModulePath('html/layout.html'), 'alias' => "layout"],
-
+			['rel' => 'template', 'href' => $GLOBALS['_rest']->getModulePath('html/layout.html'), 'alias' => "layout"],
 			['rel' => 'template', 'href' => $GLOBALS['_rest']->getModulePath('html/login.html'), 'alias' => "login-form"],
 
 			['rel' => 'page', 'href' => $GLOBALS['_rest']->getRestPath('../oauth2/login'), 'alias' => "login-page"],
