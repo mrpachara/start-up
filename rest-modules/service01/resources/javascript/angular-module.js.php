@@ -213,6 +213,8 @@
 			});
 		},
 		'$routerCanDeactivate': function(){
+			if(this.progress.count()) return false;
+
 			return (this.$$local.formCtrl && this.$$local.formCtrl.$dirty)? this.$$di.$mdDialog.show(
 				this.$$di.$mdDialog.confirm()
 					.title('Do you want to discard change?')
@@ -246,10 +248,9 @@
 						.cancel('Cancel')
 					) : vm.$$di.$q.when()
 				).then(function(){
+					var currentPath = vm.$$di.$location.path();
 					return vm.links.$load(link.alias).then(function(data){
-console.debug(vm.$router);
-console.debug(vm.$router.currentInstruction, vm.$router.isRouteActive(vm.$router));
-						if(data.status && (data.status == 'deleted') && (data.uri === vm.uri)) vm.back();
+						if((vm.$$di.$location.path() === currentPath) && data.status && (data.status == 'deleted') && (data.uri === vm.uri)) vm.back();
 					});
 				});
 			}
@@ -272,16 +273,12 @@ console.debug(vm.$router.currentInstruction, vm.$router.isRouteActive(vm.$router
 
 			vm.self.data = angular.fromJson(vm.self.$data);
 
-			var dirty = vm.$$local.formCtrl.$dirty;
-			vm.$$local.formCtrl.$setPristine();
 			vm.progress.process(vm.links.$send('save', vm.self).then(
 				function(){
+					vm.$$local.formCtrl.$setPristine();
 					vm.changeMode('View');
-				},
-				function(){
-					if(dirty) vm.$$local.formCtrl.$setDirty();
 				}
-			));
+			), 'Saving...');
 		},
 	});
 })(this, angular);

@@ -1,0 +1,49 @@
+._p(@prop, @value) {
+	-webkit-@{prop}: @value;
+	-ms-@{prop}: @value;
+	-o-@{prop}: @value;
+	@{prop}: @value;
+}
+
+._v(@prop, @value) {
+	@{prop}: ~"-webkit-@{value}";
+	@{prop}: ~"-ms-@{value}";
+	@{prop}: ~"-o-@{value}";
+	@{prop}: @value;
+}
+
+html,
+body{
+	margin: 0px;
+	padding: 0px;
+
+	font-family: sans-serif;
+	font-size: 14px;
+}
+
+svg{
+	fill: rgba(128, 128, 128, 0.75);
+}
+
+icon-set{
+	&>section{
+		padding: 8px;
+
+		&>article{
+			._v(display, flex);
+			._p(flex-direction, row);
+			._p(flex-wrap, wrap);
+		}
+	}
+}
+
+icon-svg{
+	&>div{
+		width: 200px;
+		height: 150px;
+
+		._v(display, flex);
+		._p(flex-direction, column);
+		._p(align-items, center);
+	}
+}

@@ -256,8 +256,8 @@
 		])
 
 		.factory('util', [
-			'$q', '$timeout', '$log',
-			function($q, $timeout, $log){
+			'$injector', '$q', '$timeout', '$log',
+			function($injector, $q, $timeout, $log){
 				var service;
 
 				return service = {
@@ -274,7 +274,7 @@
 
 						var service;
 						return service = {
-							'process': function(promise){
+							'process': function(promise, message){
 								var handler = $timeout(function(){
 									localProvider.count++;
 
@@ -290,6 +290,19 @@
 											localProvider.count--;
 										}
 									});
+
+									if(message){
+										try{
+											var $mdToast = $injector.get('$mdToast');
+
+											$mdToast.show($mdToast.simple()
+												.textContent(message)
+												.hideDelay(0)
+											);
+
+											//$mdToast.show(message).hideDelay(0);
+										} catch(excp){}
+									}
 								}, settings.delay);
 
 								promise.finally(function(){

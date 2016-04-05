@@ -16,7 +16,7 @@
 		</div>
 		<div flex></div>
 		<md-button type="button" ng-click="$comp.back($event)">
-			<md-icon md-svg-icon="navigation:ic-back"></md-icon>
+			<md-icon md-svg-icon="navigation:ic-chevron-left"></md-icon>
 			<span>Back</span>
 		</md-button>
 	</div>
