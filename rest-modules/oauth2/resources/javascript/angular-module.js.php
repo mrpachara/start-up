@@ -164,8 +164,8 @@
 		])
 
 		.factory('oauth2HttpInterceptor', [
-			'$log', '$injector',
-			function($log, $injector){
+			'$injector', '$log',
+			function($injector, $log){
 				return {
 					'request': function(config){
 						try{

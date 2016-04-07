@@ -49,6 +49,25 @@
 			}
 		])
 
+		.directive('utilViewAction', [
+			'$timeout',
+			function($timeout){
+				var local = {
+					'handler': null,
+				};
+				var drtv;
+				return drtv = {
+					'restrict': 'E',
+					'socpe': {},
+					'controller': UtilLinksActionController,
+					'controllerAs': '$action',
+					'bindToController': {
+						'ctrl': '<',
+					},
+				};
+			}
+		])
+
 		.component('utilSearch', {
 			'templateUrl': ['utilService', function(utilService){
 				return utilService.promise.then(function(service){
@@ -97,6 +116,40 @@
 			},
 		})
 	;
+
+	UtilLinksActionController.$inject = [];
+	function UtilLinksActionController(){
+		var vm = this;
+		var args = arguments;
+		vm.$$di = {};
+		angular.forEach(UtilLinksActionController.$inject, function(value, key){
+			vm.$$di[value] = args[key];
+		});
+	}
+	angular.extend(UtilLinksActionController.prototype, {
+		'execute': function(link){
+			var ctrl = this.ctrl;
+			if(angular.isArray(link.action)){
+				return ctrl.$router.navigate(link.action);
+			} else if(angular.isString(link.action)){
+				return ctrl.changeMode(link.action);
+			} else{
+				return (((link.confirm) || (link.class && (link.class.split(/\s+/g).indexOf('warn') >= 0)))?
+					ctrl.$$di.$mdDialog.show(ctrl.$$di.$mdDialog.confirm()
+						.title((link.confirm)? link.confirm : 'Do you want to ' + link.title + '?')
+						.textContent((link.message)? link.message : 'Your action cannot be cancel later')
+						.ok('Yes')
+						.cancel('Cancel')
+					) : ctrl.$$di.$q.when()
+				).then(function(){
+					var currentPath = ctrl.$$di.$location.path();
+					return ctrl.links.$load(link.alias).then(function(data){
+						if((ctrl.$$di.$location.path() === currentPath) && data.status && (data.status == 'deleted') && (data.uri === ctrl.uri)) ctrl.back();
+					});
+				});
+			}
+		},
+	});
 
 	UtilSearchController.$inject = ['$timeout'];
 	function UtilSearchController(){

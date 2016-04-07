@@ -10,6 +10,7 @@
 	angular.module(<?= json_encode($config->linkProp('angular-module', 'module-id')) ?>, [
 		'ldrvn', 'ldrvn.service', 'ngComponentRouter',
 		'util',
+		'app.predefined',
 	])
 		.config([
 			function(){
@@ -132,7 +133,8 @@
 
 	Service01Data01ListController.$inject = [
 		'$timeout',
-		'$ldrvn',
+		'$mdMedia',
+		'$ldrvn', 'appPredefined',
 		'service01Data01ListService',
 		'utilModuleService',
 	];
@@ -149,6 +151,8 @@
 		};
 
 		vm.service = vm.$$di.service01Data01ListService;
+		vm.predefined = vm.$$di.appPredefined;
+		vm.$mdMedia = vm.$$di.$mdMedia;
 	}
 	angular.extend(Service01Data01ListController.prototype, {
 		'$routerOnActivate': function(next, previous){
@@ -174,7 +178,7 @@
 	Service01Data01ItemController.$inject = [
 		'$window', '$timeout', '$location', '$q',
 		'$mdDialog', '$mdMedia',
-		'$ldrvn', 'util',
+		'$ldrvn', 'util', 'appPredefined',
 		'service01Data01ItemService',
 		'utilModuleService',
 	];
@@ -192,6 +196,7 @@
 
 		vm.service = vm.$$di.service01Data01ItemService;
 		vm.progress = vm.$$di.util.createProgress();
+		vm.predefined = vm.$$di.appPredefined;
 		vm.$mdMedia = vm.$$di.$mdMedia;
 	}
 	angular.extend(Service01Data01ItemController.prototype, {
@@ -233,6 +238,7 @@
 		'setForm': function(formCtrl){
 			this.$$local.formCtrl = formCtrl;
 		},
+		/*
 		'action': function(link){
 			var vm = this;
 			if(angular.isArray(link.action)){
@@ -255,6 +261,7 @@
 				});
 			}
 		},
+		*/
 		'back': function(ev){
 			return this.$$di.$window.history.back();
 		},

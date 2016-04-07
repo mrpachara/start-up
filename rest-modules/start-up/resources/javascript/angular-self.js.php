@@ -86,7 +86,7 @@
 				'startUpService',
 				function(startUpService){
 					return startUpService.promise.then(function(service){
-						return service.template('layout');
+						return service.template('layout.html');
 					});
 				}
 			],
@@ -99,7 +99,7 @@
 				'startUpService',
 				function(startUpService){
 					return startUpService.promise.then(function(service){
-						return service.template('home');
+						return service.template('home.html');
 					});
 				}
 			],

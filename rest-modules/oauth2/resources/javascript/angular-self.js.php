@@ -82,7 +82,7 @@
 				'oauth2Service',
 				function(oauth2Service){
 					return oauth2Service.promise.then(function(service){
-						return service.template('layout');
+						return service.template('layout.html');
 					});
 				}
 			],
@@ -91,14 +91,15 @@
 		.component('oauth2Login', {
 			'controller': Oauth2LoginController,
 			'controllerAs': 'vm',
-			'templateUrl': <?= json_encode($config->linkProp('login-form', 'href')) ?>,
+			'templateUrl': [
+				'oauth2Service',
+				function(oauth2Service){
+					return oauth2Service.promise.then(function(service){
+						return service.template('login-form.html');
+					});
+				}
+			],
 		})
-
-		.factory('oauth2LayoutService', [
-			function(){
-
-			}
-		])
 
 		.controller('AppController', AppController)
 	;

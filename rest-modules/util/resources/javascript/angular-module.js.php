@@ -183,12 +183,12 @@
 
 		.factory('utilHttpInterceptor', [
 			'$injector', '$q',
-			'utilLogService',
-			function($injector, $q, utilLogService){
+			function($injector, $q){
 				var service;
 				return service = {
 					'response': function(response){
 						try{
+							var utilLogService = $injector.get('utilLogService');
 							var $mdToast = $injector.get('$mdToast');
 
 							if(response.data && response.data.info){
@@ -203,6 +203,7 @@
 					},
 					'responseError': function(reject){
 						try{
+							var utilLogService = $injector.get('utilLogService');
 							var $mdToast = $injector.get('$mdToast');
 
 							var message;
@@ -256,8 +257,8 @@
 		])
 
 		.factory('util', [
-			'$injector', '$q', '$timeout', '$log',
-			function($injector, $q, $timeout, $log){
+			'$q', '$timeout', '$log', '$mdToast',
+			function($q, $timeout, $log, $mdToast){
 				var service;
 
 				return service = {
@@ -292,16 +293,12 @@
 									});
 
 									if(message){
-										try{
-											var $mdToast = $injector.get('$mdToast');
+										var $mdToast = $injector.get('$mdToast');
 
-											$mdToast.show($mdToast.simple()
-												.textContent(message)
-												.hideDelay(0)
-											);
-
-											//$mdToast.show(message).hideDelay(0);
-										} catch(excp){}
+										$mdToast.show($mdToast.simple()
+											.textContent(message)
+											.hideDelay(0)
+										);
 									}
 								}, settings.delay);
 
