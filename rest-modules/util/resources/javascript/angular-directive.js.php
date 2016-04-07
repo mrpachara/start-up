@@ -49,7 +49,7 @@
 			}
 		])
 
-		.directive('utilViewAction', [
+		.directive('utilLinksAction', [
 			'$timeout',
 			function($timeout){
 				var local = {

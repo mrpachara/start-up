@@ -238,30 +238,6 @@
 		'setForm': function(formCtrl){
 			this.$$local.formCtrl = formCtrl;
 		},
-		/*
-		'action': function(link){
-			var vm = this;
-			if(angular.isArray(link.action)){
-				return vm.$router.navigate(link.action);
-			} else if(angular.isString(link.action)){
-				return vm.changeMode(link.action);
-			} else{
-				return (((link.confirm) || (link.class && (link.class.split(/\s+/g).indexOf('warn') >= 0)))?
-					vm.$$di.$mdDialog.show(vm.$$di.$mdDialog.confirm()
-						.title((link.confirm)? link.confirm : 'Do you want to ' + link.title + '?')
-						.textContent((link.message)? link.message : 'Your action cannot be cancel later')
-						.ok('Yes')
-						.cancel('Cancel')
-					) : vm.$$di.$q.when()
-				).then(function(){
-					var currentPath = vm.$$di.$location.path();
-					return vm.links.$load(link.alias).then(function(data){
-						if((vm.$$di.$location.path() === currentPath) && data.status && (data.status == 'deleted') && (data.uri === vm.uri)) vm.back();
-					});
-				});
-			}
-		},
-		*/
 		'back': function(ev){
 			return this.$$di.$window.history.back();
 		},
