@@ -172,7 +172,7 @@
 								'controllerAs': 'dialog',
 								'locals': {
 									'name': 'Log',
-									'template': service.template('log-list'),
+									'template': service.template('log-list.html'),
 								},
 							});
 						});
@@ -293,8 +293,6 @@
 									});
 
 									if(message){
-										var $mdToast = $injector.get('$mdToast');
-
 										$mdToast.show($mdToast.simple()
 											.textContent(message)
 											.hideDelay(0)
