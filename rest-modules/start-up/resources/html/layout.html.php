@@ -24,7 +24,7 @@
 			<md-content id="app-ly-container-navigation" flex layout="column">
 				<nav id="app-cp-navigation" ng-click="$event.originalEvent.commandComplete &amp;&amp; app.$mdSidenav('app-cp-side-nav').close()"
 					style="width=100%;">
-					<util-menu util-id="app-nav-menu" service="app.utilModuleService"></util-menu>
+					<util-menu util-id="app-nav-menu" service="app.engine"></util-menu>
 				</nav>
 			</md-content>
 		</aside>
@@ -41,7 +41,7 @@
 					</md-button>
 				</div>
 				<h2 ng-show="!app.utilSearchService.activated()">
-					<span>{{ app.utilModuleService.name() }}</span>
+					<span>{{ app.engine.prop('name') }}</span>
 				</h2>
 				<div layout="row" flex>
 					<util-search service="app.utilSearchService" flex></util-search>
@@ -61,7 +61,7 @@
 						</md-menu-item>
 						<md-menu-divider style="margin-top: 0px;"></md-menu-divider>
 						<md-menu-item>
-							<md-button type="button" aria-label="show log" ng-click="app.utilService.showLog($event)">
+							<md-button type="button" aria-label="show log" ng-click="app.engine.cmd('showLog', $event)">
 								<md-icon md-svg-icon="action:ic-info-outline" alt="show log"></md-icon>
 								<span>Display logs</span>
 							</md-button>

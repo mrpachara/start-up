@@ -7,86 +7,65 @@
 (function(GLOBALOBJECT, angular){
 	'use strict';
 
-	//angular.element('head').append('<link rel="stylesheet" type="text/css" href="<?= htmlspecialchars($config->linkProp('angular-material-css', 'href')) ?>" />')
-
-	var $iconSetNames = [];
-
 	angular.module(<?= json_encode($config->linkProp('angular-module', 'module-id')) ?>, [
 		'ldrvn', 'ldrvn.service',
 		'ngMaterial',
 	])
-		.constant('iconLinks', <?= json_encode($config->links('icon/svg')) ?>)
-
 		.config([
 			'$provide', '$httpProvider',
-			'$mdIconProvider',
-			'iconLinks',
-			function($provide, $httpProvider, $mdIconProvider, iconLinks){
-				angular.forEach(iconLinks, function(link){
-					$iconSetNames.push(link['set-name']);
-					$mdIconProvider.iconSet(link['set-name'], link.href);
-				});
-
-				$provide.decorator('$mdIcon', $mdIconDecorator);
-				$provide.decorator('$http', $httpDecorator);
-
-				$httpProvider.interceptors.push('utilHttpInterceptor');
+			function($provide, $httpProvider){
+				$provide.decorator('$http', Util$httpDecorator);
 			}
 		])
 
-		.run([
-			'$http', '$templateCache', '$rootScope', 'iconLinks', 'utilSearchService', 'utilService',
-			function($http, $templateCache, $rootScope, iconLinks, utilSearchService, utilService){
-				angular.forEach(iconLinks, function(link) {
-					$http.get(link.href, {cache: $templateCache});
-				});
+		.factory('utilConfigLoader', [
+			'$ldrvn',
+			function($ldrvn){
+				return $ldrvn.loadConfig(<?= json_encode($GLOBALS['_rest']->getConfigUri()) ?>);
+			}
+		])
 
-				$rootScope.$on('$locationChangeSuccess', function(){
-					utilSearchService.enabled(false);
-				});
-
-				utilService.promise.then(function(service){
-					var $head = angular.element('head');
-					service.$$configService.$forLinks('stylesheet', function(link){
-						$head.append(angular.element('<link />', {
-							'rel': 'stylesheet',
-							'type': 'text/css',
-							'href': link.href,
-						}));
-					});
-					service.$$configService.$forLinks('stylesheet/less', function(link){
-						var $link = angular.element('<link />', {
-							'rel': 'stylesheet/less',
-							'type': 'text/css',
-							'href': link.href,
-						});
-						$head.append($link);
-						less.sheets.push($link[0]);
-					});
-					less.refresh();
-				});
+		.factory('utilService', [
+			'$ldrvn',
+			'utilConfigLoader',
+			function($ldrvn, utilConfigLoader){
+				return $ldrvn.createService(utilConfigLoader, {});
 			}
 		])
 
 		.provider('utilLogService', [
 			function(){
 				var providerLocal = {
-					'maxLog': 50,
+					'setting': {
+						'maxLog': 50,
+						'notification': null,
+					},
 				};
-				var provider = this;
-				return angular.extend(provider, {
-					'maxLog': function(value){
-						if(arguments.length === 2){
-							providerLocal.maxLog = value;
-							return provider;
+
+				return angular.extend(this, {
+					'setting': function(_setting){
+						if(arguments.length === 1){
+							angular.extend(providerLocal.setting, _setting);
+							return this;
 						} else{
-							return providerLocal.maxLog;
+							return providerLocal.setting;
 						}
 					},
 					'$get': [
+						'$injector', '$log',
 						'util',
-						function(util){
-							return util.createLog(providerLocal.maxLog);
+						function($injector, $log, util){
+							var notification;
+
+							if(providerLocal.setting.notification){
+								try{
+									notification = $injector.invoke(providerLocal.setting.notification);
+								} catch(excp){
+									$log.error(excp);
+								}
+							}
+
+							return util.createLog(providerLocal.setting.maxLog, notification);
 						}
 					]
 				});
@@ -95,9 +74,7 @@
 
 		.provider('utilSearchService', [
 			function(){
-				var provider = this;
-
-				angular.extend(provider, {
+				angular.extend(this, {
 					'$get': [
 						'$location',
 						function($location){
@@ -124,7 +101,7 @@
 										return $location.search().term || null;
 									} else{
 										if(value === '') value = null;
-										$location.search('term', value);
+										$location.search('term', value).replace();
 										updateActive(false);
 										return service;
 									}
@@ -143,116 +120,6 @@
 						}
 					]
 				});
-			}
-		])
-
-		.factory('utilConfigLoader', [
-			'$ldrvn',
-			function($ldrvn){
-				return $ldrvn.loadConfig(<?= json_encode($GLOBALS['_rest']->getConfigUri()) ?>);
-			}
-		])
-
-		.factory('utilService', [
-			'$ldrvn',
-			'$mdDialog',
-			'utilConfigLoader',
-			function($ldrvn, $mdDialog, utilConfigLoader){
-				return $ldrvn.createService(utilConfigLoader, {
-					'showLog': function(ev){
-						var service = this;
-
-						return service.promise.then(function(service){
-							return $mdDialog.show({
-								'autoWrap': false,
-								'templateUrl': service.template('popup-dialog'),
-								'targetEvent': ev,
-								'controller': 'UtilDialogController',
-								'bindToController': true,
-								'controllerAs': 'dialog',
-								'locals': {
-									'name': 'Log',
-									'template': service.template('log-list.html'),
-								},
-							});
-						});
-					},
-				});
-			}
-		])
-
-		.factory('utilHttpInterceptor', [
-			'$injector', '$q',
-			function($injector, $q){
-				var service;
-				return service = {
-					'response': function(response){
-						try{
-							var utilLogService = $injector.get('utilLogService');
-							var $mdToast = $injector.get('$mdToast');
-
-							if(response.data && response.data.info){
-								var message = response.data.info;
-
-								utilLogService.push('info', message, response.data);
-								$mdToast.showSimple(message);
-							}
-						} catch(excp){}
-
-						return response;
-					},
-					'responseError': function(reject){
-						try{
-							var utilLogService = $injector.get('utilLogService');
-							var $mdToast = $injector.get('$mdToast');
-
-							var message;
-							if(reject instanceof Error){
-								message = reject.message;
-							} else if(reject.data && reject.data.error_description){
-								message = reject.data.error_description;
-							} else if(reject.statusText){
-								message = reject.statusText;
-							} else{
-								message = reject;
-							}
-
-							utilLogService.push('error', message, (reject.data)? reject.data : reject);
-							$mdToast.showSimple(message);
-						} catch($excp){}
-
-						return $q.reject(reject);
-					},
-				};
-			}
-		])
-
-		.factory('utilModuleService', [
-			function(){
-				var local = {
-					'name': null,
-					'menu': null,
-				};
-
-				var service;
-				return service = {
-					'name': function(value){
-						if(arguments.length === 0){
-							return local.name;
-						} else{
-							local.name = value;
-							return service;
-						}
-					},
-					'menu': function(value){
-						if(arguments.length === 0){
-							return local.menu;
-						} else{
-							local.menu = value;
-							return service;
-						}
-					},
-				};
 			}
 		])
 
@@ -277,23 +144,26 @@
 						return service = {
 							'process': function(promise, message){
 								var handler = $timeout(function(){
+									var messageHandler;
 									localProvider.count++;
 
 									var timeoutHandler = $timeout(function(){
 										timeoutHandler = null;
 										$log.warn('timeout for:', promise);
 										localProvider.count--;
+										$mdToast.hide(messageHandler);
 									}, settings.timeout);
 
 									promise.finally(function(){
 										if(timeoutHandler !== null){
 											$timeout.cancel(timeoutHandler);
 											localProvider.count--;
+											$mdToast.hide(messageHandler);
 										}
 									});
 
 									if(message){
-										$mdToast.show($mdToast.simple()
+										messageHandler = $mdToast.show($mdToast.simple()
 											.textContent(message)
 											.hideDelay(0)
 										);
@@ -311,12 +181,14 @@
 							},
 						};
 					},
-					'createLog': function(limit){
+					'createLog': function(limit, notification){
 						limit = limit || 20;
 						var local = {
 							'logs': [],
+							'notification': notification,
 						};
 
+						var slice = [].slice;
 						var service;
 						return service = {
 							'push': function(type, message, data){
@@ -328,6 +200,10 @@
 								});
 
 								local.logs.splice(limit, local.logs.length);
+
+								if(angular.isFunction(local.notification)){
+									local.notification.apply(void 0, slice.call(arguments, 0));
+								}
 
 								return service;
 							},
@@ -341,23 +217,8 @@
 		])
 	;
 
-	$mdIconDecorator.$inject = ['$delegate'];
-	function $mdIconDecorator($delegate){
-		return function(){
-			var args = [].slice.call(arguments);
-			var id = args[0];
-			var ids = id.split(':', 2);
-
-			if((ids.length === 2) && ($iconSetNames.indexOf(ids[0]) >= 0)){
-				args[0] = args[0].replace(/-/g, '_') + '_24px';
-			}
-
-			return $delegate.apply(undefined, args);
-		}
-	}
-
-	$httpDecorator.$inject = ['$delegate'];
-	function $httpDecorator($delegate){
+	Util$httpDecorator.$inject = ['$delegate'];
+	function Util$httpDecorator($delegate){
 		function httpDeferUrl(requestConfig){
 			var self = this;
 			var args = [].slice.call(arguments, 0);

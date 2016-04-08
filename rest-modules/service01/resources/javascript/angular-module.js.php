@@ -10,7 +10,7 @@
 	angular.module(<?= json_encode($config->linkProp('angular-module', 'module-id')) ?>, [
 		'ldrvn', 'ldrvn.service', 'ngComponentRouter',
 		'util',
-		'app.predefined',
+		'app.default',
 	])
 		.config([
 			function(){
@@ -23,6 +23,32 @@
 				$rootRouter.config([
 					{'path': '/service01/...', 'name': 'Service01', 'component': 'service01'},
 				]);
+			}
+		])
+
+		.factory('service01Data01ListService', [
+			'$q', '$ldrvn', 'service01ConfigLoader',
+			function($q, $ldrvn, service01ConfigLoader){
+				return $ldrvn.createService(service01ConfigLoader, {
+					'load': function(params){
+						return this.promise.then(function(service){
+							return service.$$configService.$load('data01', params);
+						});
+					},
+				});
+			}
+		])
+
+		.factory('service01Data01ItemService', [
+			'$q', '$ldrvn', 'service01ConfigLoader',
+			function($q, $ldrvn, service01ConfigLoader){
+				return $ldrvn.createService(service01ConfigLoader, {
+					'load': function(params){
+						return this.promise.then(function(service){
+							return service.$$configService.$load(['data01-item', params]);
+						});
+					},
+				});
 			}
 		])
 
@@ -103,40 +129,14 @@
 				return $ldrvn.createService(service01ConfigLoader, {});
 			}
 		])
-
-		.factory('service01Data01ListService', [
-			'$q', '$ldrvn', 'service01ConfigLoader',
-			function($q, $ldrvn, service01ConfigLoader){
-				return $ldrvn.createService(service01ConfigLoader, {
-					'load': function(params){
-						return this.promise.then(function(service){
-							return service.$$configService.$load('data01', params);
-						});
-					},
-				});
-			}
-		])
-
-		.factory('service01Data01ItemService', [
-			'$q', '$ldrvn', 'service01ConfigLoader',
-			function($q, $ldrvn, service01ConfigLoader){
-				return $ldrvn.createService(service01ConfigLoader, {
-					'load': function(params){
-						return this.promise.then(function(service){
-							return service.$$configService.$load(['data01-item', params]);
-						});
-					},
-				});
-			}
-		])
 	;
 
 	Service01Data01ListController.$inject = [
 		'$timeout',
 		'$mdMedia',
-		'$ldrvn', 'appPredefined',
+		'$ldrvn', 'utilTemplate',
 		'service01Data01ListService',
-		'utilModuleService',
+		'appEngine',
 	];
 	function Service01Data01ListController(){
 		var vm = this;
@@ -151,7 +151,7 @@
 		};
 
 		vm.service = vm.$$di.service01Data01ListService;
-		vm.predefined = vm.$$di.appPredefined;
+		vm.template = vm.$$di.utilTemplate;
 		vm.$mdMedia = vm.$$di.$mdMedia;
 	}
 	angular.extend(Service01Data01ListController.prototype, {
@@ -161,7 +161,7 @@
 			return vm.service.promise.then(function(service){
 				return service.load(next.params).then(function(model){
 					vm.$$di.$timeout(function(){
-						vm.$$di.utilModuleService.name('Data01');
+						vm.$$di.appEngine.prop('name','Data01');
 					}, 10);
 
 					angular.extend(vm, model);
@@ -178,9 +178,9 @@
 	Service01Data01ItemController.$inject = [
 		'$window', '$timeout', '$location', '$q',
 		'$mdDialog', '$mdMedia',
-		'$ldrvn', 'util', 'appPredefined',
+		'$ldrvn', 'util', 'utilTemplate',
 		'service01Data01ItemService',
-		'utilModuleService',
+		'appEngine',
 	];
 	function Service01Data01ItemController(){
 		var vm = this;
@@ -196,7 +196,7 @@
 
 		vm.service = vm.$$di.service01Data01ItemService;
 		vm.progress = vm.$$di.util.createProgress();
-		vm.predefined = vm.$$di.appPredefined;
+		vm.template = vm.$$di.utilTemplate;
 		vm.$mdMedia = vm.$$di.$mdMedia;
 	}
 	angular.extend(Service01Data01ItemController.prototype, {
@@ -207,7 +207,7 @@
 			return vm.service.promise.then(function(service){
 				return service.load(vm.$$local.params).then(function(model){
 					vm.$$di.$timeout(function(){
-						vm.$$di.utilModuleService.name('Data01/' + model.self.id);
+						vm.$$di.appEngine.prop('name', 'Data01/' + model.self.id);
 					}, 10);
 
 					angular.extend(vm, model);

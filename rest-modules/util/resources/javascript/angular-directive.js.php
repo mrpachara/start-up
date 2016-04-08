@@ -10,7 +10,7 @@
 	var ngModule = angular.module(<?= json_encode($config->linkProp('angular-directive', 'module-id')) ?>, [
 		'ldrvn', 'ldrvn.service',
 		'ngComponentRouter', 'ngMaterial',
-		'util',
+		'util', 'util.default',
 	])
 		.directive('utilId', [
 			function(){
@@ -69,9 +69,9 @@
 		])
 
 		.component('utilSearch', {
-			'templateUrl': ['utilService', function(utilService){
-				return utilService.promise.then(function(service){
-					return service.template('search-form');
+			'templateUrl': ['utilTemplate', function(utilTemplate){
+				return utilTemplate.promise.then(function(template){
+					return template('search-form');
 				});
 			}],
 			'controller': UtilSearchController,
@@ -85,9 +85,9 @@
 			'require': {
 				'menuCtrl': '?^^utilMenu',
 			},
-			'templateUrl': ['utilService', function(utilService){
-				return utilService.promise.then(function(service){
-					return service.template('menu');
+			'templateUrl': ['utilTemplate', function(utilTemplate){
+				return utilTemplate.promise.then(function(template){
+					return template('menu');
 				});
 			}],
 			'controller': UtilMenuController,
@@ -103,9 +103,9 @@
 			'require': {
 				'menuCtrl': '^^utilMenu',
 			},
-			'templateUrl': ['utilService', function(utilService){
-				return utilService.promise.then(function(service){
-					return service.template('menu-item');
+			'templateUrl': ['utilTemplate', function(utilTemplate){
+				return utilTemplate.promise.then(function(template){
+					return template('menu-item');
 				});
 			}],
 			'controller': UtilMenuController,
@@ -115,6 +115,10 @@
 				'index': '=',
 			},
 		})
+
+		.controller('UtilDialogController', UtilDialogController)
+
+		.controller('UtilLogListController', UtilLogListController)
 	;
 
 	UtilLinksActionController.$inject = [];
@@ -221,7 +225,7 @@
 			if(vm.id) vm.$$local.element = angular.element('#' + vm.id);
 		},
 		'item': function(){
-			return (this.service)? this.service.menu() : this.data;
+			return (this.service)? this.service.prop('menu') : this.data;
 		},
 		'depth': function(){
 			return this.$$local.depth;
@@ -277,4 +281,28 @@
 			return vm.$$local.menuHeight;
 		},
 	});
+
+	UtilDialogController.$inject = ['$mdDialog'];
+	function UtilDialogController(){
+		var vm = this;
+		var args = arguments;
+		vm.$$di = {};
+		angular.forEach(UtilDialogController.$inject, function(value, key){
+			vm.$$di[value] = args[key];
+		});
+
+		vm.$mdDialog = vm.$$di.$mdDialog;
+	}
+
+	UtilLogListController.$inject = ['utilLogService'];
+	function UtilLogListController(){
+		var vm = this;
+		var args = arguments;
+		vm.$$di = {};
+		angular.forEach(UtilLogListController.$inject, function(value, key){
+			vm.$$di[value] = args[key];
+		});
+
+		vm.items = vm.$$di.utilLogService.list();
+	}
 })(this, angular);

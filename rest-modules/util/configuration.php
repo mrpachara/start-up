@@ -16,12 +16,6 @@
 				'rel' => 'stylesheet/less', 'href' => $GLOBALS['_rest']->getModulePath("css/util.less"),
 				'alias' => "util-less",
 			],
-
-			[
-				'rel' => 'self/javascript', 'href' => $GLOBALS['_rest']->getModulePath("javascript/angular-self.js"),
-				'alias' => "angular-self", 'module-id' => "util.app",
-			],
-
 /*
 			[
 				'rel' => 'module/javascript', 'href' => $GLOBALS['_rest']->getModulePath("bower_components/jquery/dist/jquery.js"),
@@ -69,19 +63,22 @@
 				'alias' => "angular-module", 'module-id' => "util",
 			],
 			[
-				'rel' => 'module/javascript', 'href' => $GLOBALS['_rest']->getModulePath("javascript/angular-controller.js"),
-				'alias' => "angular-controller", 'module-id' => "util.controller",
-			],
-			[
 				'rel' => 'module/javascript', 'href' => $GLOBALS['_rest']->getModulePath("javascript/angular-directive.js"),
 				'alias' => "angular-directive", 'module-id' => "util.directive",
 			],
+			[
+				'rel' => 'module/javascript', 'href' => $GLOBALS['_rest']->getModulePath("javascript/angular-default.js"),
+				'alias' => "angular-default", 'module-id' => "util.default",
+			],
 
-			['rel' => 'template', 'href' => $GLOBALS['_rest']->getModulePath('html/popup-dialog.html'), 'alias' => "popup-dialog"],
+			['rel' => 'template', 'href' => $GLOBALS['_rest']->getModulePath('html/popup-dialog.html'), 'alias' => "popup-dialog.html"],
 			['rel' => 'template', 'href' => $GLOBALS['_rest']->getModulePath('html/log-list.html'), 'alias' => "log-list.html"],
 			['rel' => 'template', 'href' => $GLOBALS['_rest']->getModulePath('html/search-form.html'), 'alias' => "search-form"],
 			['rel' => 'template', 'href' => $GLOBALS['_rest']->getModulePath('html/menu.html'), 'alias' => "menu"],
 			['rel' => 'template', 'href' => $GLOBALS['_rest']->getModulePath('html/menu-item.html'), 'alias' => "menu-item"],
+
+			['rel' => 'template', 'href' => $GLOBALS['_rest']->getModulePath('html/view-action.html'), 'alias' => "view-action.html"],
+			['rel' => 'template', 'href' => $GLOBALS['_rest']->getModulePath('html/list-more-action.html'), 'alias' => "list-more-action.html"],
 		],
 	];
 

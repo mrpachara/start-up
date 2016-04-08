@@ -11,6 +11,7 @@
 		'ldrvn', 'ldrvn.service', 'ngComponentRouter',
 		'ngMessages', 'ngSanitize', 'ngMaterial',
 		'util', 'oauth2', 'start-up',
+		'app.default',
 	])
 		.value('$routerRootComponent', 'body')
 
@@ -63,16 +64,16 @@
 
 		.run([
 			'$rootRouter',
-			'utilModuleService',
+			'appEngine',
 			'startUpService',
-			function($rootRouter, utilModuleService, startUpService){
+			function($rootRouter, appEngine, startUpService){
 				$rootRouter.config([
 					{'path': '/home', 'name': 'Home', 'component': 'startUpHome', 'useAsDefault': true},
 				]);
 
 				startUpService.promise.then(function(service){
 					return service.$$configService.$load('menu').then(function(data){
-						utilModuleService.menu(data);
+						appEngine.prop('menu', data);
 						return data;
 					});
 				});
@@ -112,7 +113,7 @@
 	AppController.$inject= [
 		'$log', '$window', '$injector', '$q', '$interval',
 		'$mdMedia', '$mdSidenav', '$mdDialog',
-		'utilService', 'utilSearchService', 'utilModuleService',
+		'utilService', 'utilSearchService', 'appEngine',
 		'startUpService', 'oauth2Service',
 	];
 	function AppController(){
@@ -134,9 +135,10 @@
 
 		vm.$mdMedia = vm.$$di.$mdMedia;
 		vm.$mdSidenav = vm.$$di.$mdSidenav;
+		vm.engine = vm.$$di.appEngine;
+
 		vm.utilService = vm.$$di.utilService;
 		vm.utilSearchService = vm.$$di.utilSearchService;
-		vm.utilModuleService = vm.$$di.utilModuleService;
 
 		vm.$$di.oauth2Service.info().then(
 			function(data){

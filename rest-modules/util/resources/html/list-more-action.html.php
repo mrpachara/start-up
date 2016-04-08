@@ -25,10 +25,5 @@
 				<span>action 02</span>
 			</md-button>
 		</md-menu-item>
-		<md-menu-item>
-			<md-button type="button">
-				<span>action 03</span>
-			</md-button>
-		</md-menu-item>
 	</md-menu-content>
 </md-menu>
