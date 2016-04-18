@@ -161,7 +161,7 @@
 		},
 	});
 
-	StartUpHomeController.$inject = ['$timeout', 'utilSearchService', 'utilModuleService'];
+	StartUpHomeController.$inject = ['$timeout', 'utilSearchService', 'appEngine'];
 	function StartUpHomeController(){
 		var vm = this;
 		var args = arguments;
@@ -181,7 +181,7 @@
 			/* change some property may be defer executed */
 			vm.$$di.$timeout(function(){
 				vm.$$di.utilSearchService.enabled(true);
-				vm.$$di.utilModuleService.name('Home');
+				vm.$$di.appEngine.prop('name', 'Home');
 			}, 10);
 		},
 		'incBoxSize': function(){
