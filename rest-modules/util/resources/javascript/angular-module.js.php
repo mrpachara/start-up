@@ -133,6 +133,7 @@
 						var settings = {
 							'delay': 300,
 							'timeout': 30000,
+							'notificationService': null,
 						};
 						angular.extend(settings, _settings);
 

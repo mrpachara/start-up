@@ -8,6 +8,10 @@
 		'uri' => $GLOBALS['_rest']->getConfigUri(),
 		'links' => [
 			[
+				'rel' => 'self/javascript', 'href' => $GLOBALS['_rest']->getModulePath("javascript/angular-default.js"),
+				'alias' => "angular-default", 'module-id' => "app.default",
+			],
+			[
 				'rel' => 'self/javascript', 'href' => $GLOBALS['_rest']->getModulePath("javascript/angular-self.js"),
 				'alias' => "angular-self", 'module-id' => "oauth2.app",
 			],

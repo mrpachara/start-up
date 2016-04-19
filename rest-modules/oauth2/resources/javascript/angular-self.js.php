@@ -12,6 +12,7 @@
 		'ngMessages', 'ngSanitize', 'ngMaterial',
 		'util', 'util.directive',
 		'oauth2',
+		'app.default',
 	])
 		.value('$routerRootComponent', 'body')
 
