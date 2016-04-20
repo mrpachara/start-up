@@ -9,7 +9,6 @@
 
 	angular.module(<?= json_encode($config->linkProp('angular-module', 'module-id')) ?>, [
 		'ldrvn', 'ldrvn.service',
-		'ngMaterial',
 	])
 		.config([
 			'$provide', '$httpProvider',
@@ -123,97 +122,124 @@
 			}
 		])
 
-		.factory('util', [
-			'$q', '$timeout', '$log', '$mdToast',
-			function($q, $timeout, $log, $mdToast){
-				var service;
-
-				return service = {
-					'createProgress': function(_settings){
-						var settings = {
-							'delay': 300,
-							'timeout': 30000,
-							'notificationService': null,
-						};
-						angular.extend(settings, _settings);
-
-						var localProvider = {
-							'count': 0,
-						};
-
-						var service;
-						return service = {
-							'process': function(promise, message){
-								var handler = $timeout(function(){
-									var messageHandler;
-									localProvider.count++;
-
-									var timeoutHandler = $timeout(function(){
-										timeoutHandler = null;
-										$log.warn('timeout for:', promise);
-										localProvider.count--;
-										$mdToast.hide(messageHandler);
-									}, settings.timeout);
-
-									promise.finally(function(){
-										if(timeoutHandler !== null){
-											$timeout.cancel(timeoutHandler);
-											localProvider.count--;
-											$mdToast.hide(messageHandler);
-										}
-									});
-
-									if(message){
-										messageHandler = $mdToast.show($mdToast.simple()
-											.textContent(message)
-											.hideDelay(0)
-										);
-									}
-								}, settings.delay);
-
-								promise.finally(function(){
-									$timeout.cancel(handler);
-								});
-
-								return service;
-							},
-							'count': function(){
-								return localProvider.count;
-							},
-						};
-					},
-					'createLog': function(limit, notification){
-						limit = limit || 20;
-						var local = {
-							'logs': [],
-							'notification': notification,
-						};
-
-						var slice = [].slice;
-						var service;
-						return service = {
-							'push': function(type, message, data){
-								local.logs.unshift({
-									'type': type,
-									'message': message,
-									'timestamp': new Date(),
-									'data': data,
-								});
-
-								local.logs.splice(limit, local.logs.length);
-
-								if(angular.isFunction(local.notification)){
-									local.notification.apply(void 0, slice.call(arguments, 0));
-								}
-
-								return service;
-							},
-							'list': function(){
-								return angular.copy(local.logs);
-							},
-						};
-					},
+		.provider('util', [
+			function(){
+				var providerSettings = {
+					'defaultProgressDelay': 300,
+					'defaultProgressTimeout': 30000,
+					'defaultNotificationService': null,
 				};
+				angular.extend(this, {
+					'setting': function(){
+						if(arugments.lenght === 2){
+							providerSettings[arguments[0]] = arguments[1];
+						} else if(arguments.length === 1){
+							angular.extend(providerSettings, arguments[0]);
+						} else{
+							return angular.copy(providerSetting);
+						}
+
+						return this;
+					},
+					'$get': [
+						'$q', '$timeout', '$log',
+						function($q, $timeout, $log){
+							var service;
+
+							return service = {
+								'createProgress': function(_settings){
+									var settings = {
+										'delay': providerSettings.defaultProgressDelay,
+										'timeout': providerSettings.defaultProgressTimeout,
+										'notificationService': providerSettings.defaultNotificationService,
+									};
+									angular.extend(settings, _settings);
+
+									var localProvider = {
+										'count': 0,
+									};
+
+									var service;
+									return service = {
+										'process': function(promise, message){
+											var handler = $timeout(function(){
+												var messageHandler;
+												localProvider.count++;
+
+												var timeoutHandler = $timeout(function(){
+													timeoutHandler = null;
+													$log.warn('timeout for:', promise);
+													localProvider.count--;
+													if(message && settings.notificationService) settings.notificationService.hide(messageHandler);
+													//$mdToast.hide(messageHandler);
+												}, settings.timeout);
+
+												promise.finally(function(){
+													if(timeoutHandler !== null){
+														$timeout.cancel(timeoutHandler);
+														localProvider.count--;
+														if(message && settings.notificationService) settings.notificationService.hide(messageHandler);
+														//$mdToast.hide(messageHandler);
+													}
+												});
+
+												if(message && settings.notificationService){
+													messageHandler = settings.notificationService.show(message);
+													/*
+													messageHandler = $mdToast.show($mdToast.simple()
+														.textContent(message)
+														.hideDelay(0)
+													);
+													*/
+												}
+											}, settings.delay);
+
+											promise.finally(function(){
+												$timeout.cancel(handler);
+											});
+
+											return service;
+										},
+										'count': function(){
+											return localProvider.count;
+										},
+									};
+								},
+								'createLog': function(limit, notification){
+									limit = limit || 20;
+									var local = {
+										'logs': [],
+										'notification': notification,
+									};
+
+									var slice = [].slice;
+									var service;
+									return service = {
+										'push': function(type, message, data){
+											local.logs.unshift({
+												'type': type,
+												'message': message,
+												'timestamp': new Date(),
+												'data': data,
+											});
+
+											local.logs.splice(limit, local.logs.length);
+
+											if(angular.isFunction(local.notification)){
+												local.notification.apply(void 0, slice.call(arguments, 0));
+											}
+
+											return service;
+										},
+										'list': function(){
+											return angular.copy(local.logs);
+										},
+									};
+								},
+							};
+						}
+					],
+				});
 			}
 		])
 	;
