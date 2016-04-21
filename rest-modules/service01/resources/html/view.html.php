@@ -6,7 +6,7 @@
 ?>
 <article class="md-content md-padding">
 	<div layout="row">
-		<util-links-action ctrl="$comp" ng-include="$comp.template('view-action.html')"></util-links-action>
+		<util-links-action ctrl="$comp" ng-include="$comp.$ae.service('template', 'view-action.html')"></util-links-action>
 		<div flex></div>
 		<md-button type="button" ng-click="$comp.back($event)">
 			<md-icon md-svg-icon="navigation:ic-chevron-left"></md-icon>

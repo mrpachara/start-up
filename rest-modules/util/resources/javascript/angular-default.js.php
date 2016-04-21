@@ -1,3 +1,4 @@
+
 <?php
 	if(!defined("RESTCONFIGURATED")){
 		header(((isset($_SERVER['SERVER_PROTOCOL']))? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0')." 404 Not Found");
@@ -19,6 +20,8 @@
 			'services': {
 				'log': 'utilLogService',
 				'search': 'utilSearchService',
+				'notification': 'utilNotificationService',
+				'template': 'utilTemplate',
 			},
 			'cmds': {
 				'showLog': [
@@ -42,15 +45,15 @@
 						}
 					}
 				],
+				'showNotification': [
+					'$mdToast',
+					function($mdToast){
+						return function(type, message, data){
+							$mdToast.showSimple(message);
+						};
+					}
+				],
 			},
-			'utilLogServiceNotification': [
-				'$mdToast',
-				function($mdToast){
-					return function(type, message, data){
-						$mdToast.showSimple(message);
-					};
-				}
-			]
 		})
 
 		.run([
@@ -94,13 +97,124 @@
 			}
 		])
 
-		.provider('appEngine', [
+		.provider('utilLogService', [
+			function(){
+				var providerLocal = {
+					'setting': {
+						'maxLog': 50,
+						'notification': null,
+					},
+				};
+
+				return angular.extend(this, {
+					'setting': function(_setting){
+						if(arguments.length === 1){
+							angular.extend(providerLocal.setting, _setting);
+							return this;
+						} else{
+							return providerLocal.setting;
+						}
+					},
+					'$get': [
+						'$injector', '$log',
+						'util',
+						function($injector, $log, util){
+							var notification;
+
+							if(providerLocal.setting.notification){
+								try{
+									notification = $injector.invoke(providerLocal.setting.notification);
+								} catch(excp){
+									$log.error(excp);
+								}
+							}
+
+							return util.createLog(providerLocal.setting.maxLog, notification);
+						}
+					]
+				});
+			}
+		])
+
+		.provider('utilSearchService', [
+			function(){
+				angular.extend(this, {
+					'$get': [
+						'$location',
+						function($location){
+							var local = {
+								'activated': false,
+								'enabled': false,
+							};
+
+							function updateActive(value){
+								local.activated =	(!!value || !!service.search());
+							}
+
+							var service = {
+								'activated': function(value){
+									if(arguments.length === 0){
+										return local.activated;
+									} else{
+										updateActive(value);
+										return service;
+									}
+								},
+								'search': function(value){
+									if(arguments.length === 0){
+										return $location.search().term || null;
+									} else{
+										if(value === '') value = null;
+										$location.search('term', value).replace();
+										updateActive(false);
+										return service;
+									}
+								},
+								'enabled': function(value){
+									if(arguments.length === 0){
+										return local.enabled;
+									} else{
+										local.enabled = value;
+										return service;
+									}
+								},
+							};
+
+							return service.activated(false).enabled(false);
+						}
+					]
+				});
+			}
+		])
+
+		.factory('utilNotificationService', [
+			'$mdToast',
+			function($mdToast){
+				var service;
+
+				return service = {
+					'show': function(message, hideDelay){
+						if(arguments.length == 2){
+							return $mdToast.show($mdToast.simple()
+								.textContent(message)
+								.hideDelay(hideDelay)
+							);
+						} else{
+							return $mdToast.simple(message);
+						}
+					},
+					'hide': function(handler){
+						return $mdToast.hide(handler);
+					},
+				};
+			}
+		])
+
+		.provider('appIcon', [
 			'$provide',
 			'$mdIconProvider',
 			function($provide, $mdIconProvider){
 				var providerLocal = {
-					'cmds': {},
-					'services': {},
 					'iconsLinks': [],
 				};
 
@@ -116,74 +230,12 @@
 
 						return this;
 					},
-					'cmds': function(_cmds){
-						if(arguments.length === 1){
-							angular.extend(providerLocal.cmds, _cmds);
-							return this;
-						} else{
-							return providerLocal.cmds;
-						}
-					},
-					'services': function(_services){
-						if(arguments.length === 1){
-							angular.extend(providerLocal.services, _services);
-							return this;
-						} else{
-							return providerLocal.services;
-						}
-					},
 					'$get': [
-						'$injector', '$log', '$http', '$templateCache',
-						function($injector, $log, $http, $templateCache){
-							var local = {
-								'props': {},
-								'cmds': {},
-								'services': {},
-							};
-
-							angular.forEach(providerLocal.services, function(name, key){
-								try{
-									local.services[key] = $injector.get(name);
-								} catch(excp){
-									$log.error(excp);
-								}
-							});
-
-							angular.forEach(providerLocal.cmds, function(injectable, key){
-								try{
-									local.cmds[key] = $injector.invoke(injectable);
-								} catch(excp){
-									$log.error(excp);
-								}
-							})
-
+						'$http', '$templateCache',
+						function($http, $templateCache){
 							var slice = [].slice;
 							var service;
 							return service = {
-								'prop': function(name, value){
-									if(arguments.length === 2){
-										local.props[name] = value;
-										return service;
-									} else{
-										return local.props[name];
-									}
-								},
-								'cmd': function(name){
-									if(angular.isFunction(local.cmds[name])){
-										var args = slice.call(arguments, 1);
-										return local.cmds[name].apply(void 0, args);
-									} else{
-										return void 0;
-									}
-								},
-								'service': function(name, method){
-									if(local.services[name] && local.services[name][method]){
-										var args = slice.call(arguments, 2);
-										return local.services[name][method].apply(local.services[name], args);
-									} else{
-										return void 0;
-									}
-								},
 								'preloadIcons': function(){
 									angular.forEach(providerLocal.iconsLinks, function(link) {
 										$http.get(link.href, {cache: $templateCache});
@@ -202,15 +254,16 @@
 			'$injector', '$q',
 			function($injector, $q){
 				var service;
+
 				return service = {
 					'response': function(response){
 						try{
-							var utilLogService = $injector.get('utilLogService');
+							var appEngine = $injector.get('appEngine');
 
 							if(response.data && response.data.info){
 								var message = response.data.info;
 
-								utilLogService.push('info', message, response.data);
+								appEngine.services('log', 'push', 'info', message, response.data)
 							}
 						} catch(excp){}
 
@@ -218,7 +271,7 @@
 					},
 					'responseError': function(reject){
 						try{
-							var utilLogService = $injector.get('utilLogService');
+							var appEngine = $injector.get('appEngine');
 
 							var message;
 							if(reject instanceof Error){
@@ -231,7 +284,7 @@
 								message = reject;
 							}
 
-							utilLogService.push('error', message, (reject.data)? reject.data : reject);
+							appEngine.services('log', 'push', 'error', message, (reject.data)? reject.data : reject)
 						} catch($excp){}
 
 						return $q.reject(reject);

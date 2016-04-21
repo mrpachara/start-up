@@ -7,38 +7,41 @@
 (function(GLOBALOBJECT, angular){
 	'use strict';
 
-	angular.module(<?= json_encode($config->linkProp('angular-default', 'module-id')) ?>, [
+	angular.module(<?= json_encode($config->linkProp('angular-app-engine', 'module-id')) ?>, [
 		'ngMaterial',
 		'util', 'util.default',
 	])
 		.config([
-			'$httpProvider',
-			'utilLogServiceProvider',
-			'appEngineProvider',
+			'$httpProvider', 'utilProvider',
+			'appIconProvider', 'appEngineProvider',
 			'utilDefault',
 			function(
-				$httpProvider, utilLogServiceProvider, appEngineProvider,
+				$httpProvider, utilProvider,
+				appIconProvider, appEngineProvider,
 				utilDefault
 			){
-				appEngineProvider.initIcons(utilDefault.iconLinks);
-				appEngineProvider.cmds(utilDefault.cmds);
-				appEngineProvider.services(utilDefault.services);
-
-				utilLogServiceProvider.setting({
-					'notification': utilDefault.utilLogServiceNotification,
+				utilProvider.setting({
+					'defaultNotificationService': 'utilNotificationService',
 				});
+
+				appIconProvider.initIcons(utilDefault.iconLinks);
+
+				appEngineProvider.cmds(utilDefault.cmds);
+				appEngineProvider.services(angular.extend(utilDefault.services, {
+					'template': 'startUpTemplate',
+				}));
 
 				$httpProvider.interceptors.push('utilDefaultHttpInterceptor');
 			}
 		])
 		.run([
-			'appEngine',
-			function(appEngine){
-				appEngine.preloadIcons();
+			'appIcon',
+			function(appIcon){
+				appIcon.preloadIcons();
 			}
 		])
 
-		.factory('utilTemplate', [
+		.factory('startUpTemplate', [
 			'$q',
 			'utilService', 'startUpService',
 			function($q, utilService, startUpService){

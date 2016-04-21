@@ -10,7 +10,7 @@
 	angular.module(<?= json_encode($config->linkProp('angular-module', 'module-id')) ?>, [
 		'ldrvn', 'ldrvn.service', 'ngComponentRouter',
 		'util',
-		'app.default',
+		'app.engine',
 	])
 		.config([
 			function(){
@@ -134,7 +134,7 @@
 	Service01Data01ListController.$inject = [
 		'$timeout',
 		'$mdMedia',
-		'$ldrvn', 'utilTemplate',
+		'$ldrvn', 'appEngine',
 		'service01Data01ListService',
 		'appEngine',
 	];
@@ -151,7 +151,7 @@
 		};
 
 		vm.service = vm.$$di.service01Data01ListService;
-		vm.template = vm.$$di.utilTemplate;
+		vm.$ae = vm.$$di.appEngine;
 		vm.$mdMedia = vm.$$di.$mdMedia;
 	}
 	angular.extend(Service01Data01ListController.prototype, {
@@ -178,7 +178,7 @@
 	Service01Data01ItemController.$inject = [
 		'$window', '$timeout', '$location', '$q',
 		'$mdDialog', '$mdMedia',
-		'$ldrvn', 'util', 'utilTemplate',
+		'$ldrvn', 'util', 'appEngine',
 		'service01Data01ItemService',
 		'appEngine',
 	];
@@ -196,7 +196,7 @@
 
 		vm.service = vm.$$di.service01Data01ItemService;
 		vm.progress = vm.$$di.util.createProgress();
-		vm.template = vm.$$di.utilTemplate;
+		vm.$ae = vm.$$di.appEngine;
 		vm.$mdMedia = vm.$$di.$mdMedia;
 	}
 	angular.extend(Service01Data01ItemController.prototype, {

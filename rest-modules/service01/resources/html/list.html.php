@@ -13,7 +13,7 @@
 				<h3>{{ item.code }}</h3>
 				<h4>{{ item.name }}</h4>
 				<util-links-action ctrl="$comp" class="md-secondary" ng-click aria-label="More Action"
-					ng-include="$comp.template('list-more-action.html')"></util-links-action>
+					ng-include="$comp.$ae.service('template', 'list-more-action.html')"></util-links-action>
 			</div>
 		</md-list-item>
 		<md-divider ng-repeat-end></md-divider>

@@ -8,8 +8,8 @@
 		'uri' => $GLOBALS['_rest']->getConfigUri(),
 		'links' => [
 			[
-				'rel' => 'self/javascript', 'href' => $GLOBALS['_rest']->getModulePath("javascript/angular-default.js"),
-				'alias' => "angular-default", 'module-id' => "app.default",
+				'rel' => 'self/javascript', 'href' => $GLOBALS['_rest']->getModulePath("javascript/angular-app-engine.js"),
+				'alias' => "angular-app-engine", 'module-id' => "app.engine",
 			],
 			[
 				'rel' => 'self/javascript', 'href' => $GLOBALS['_rest']->getModulePath("javascript/angular-self.js"),

@@ -32,93 +32,104 @@
 			}
 		])
 
-		.provider('utilLogService', [
-			function(){
+		.provider('appEngine', [
+			'$provide',
+			function($provide){
 				var providerLocal = {
-					'setting': {
-						'maxLog': 50,
-						'notification': null,
-					},
+					'cmds': {},
+					'services': {},
 				};
 
-				return angular.extend(this, {
-					'setting': function(_setting){
+				angular.extend(this, {
+					'cmds': function(_cmds){
 						if(arguments.length === 1){
-							angular.extend(providerLocal.setting, _setting);
+							angular.extend(providerLocal.cmds, _cmds);
 							return this;
 						} else{
-							return providerLocal.setting;
+							return providerLocal.cmds;
+						}
+					},
+					'services': function(_services){
+						if(arguments.length === 1){
+							angular.extend(providerLocal.services, _services);
+							return this;
+						} else{
+							return providerLocal.services;
 						}
 					},
 					'$get': [
-						'$injector', '$log',
-						'util',
-						function($injector, $log, util){
-							var notification;
+						'$injector', '$log', '$http', '$templateCache',
+						function($injector, $log, $http, $templateCache){
+							var local = {
+								'props': {},
+								'cmds': {},
+								'services': {},
+							};
 
-							if(providerLocal.setting.notification){
+							angular.forEach(providerLocal.services, function(name, key){
 								try{
-									notification = $injector.invoke(providerLocal.setting.notification);
+									local.services[key] = $injector.get(name);
 								} catch(excp){
 									$log.error(excp);
 								}
-							}
+							});
 
-							return util.createLog(providerLocal.setting.maxLog, notification);
+							angular.forEach(providerLocal.cmds, function(injectable, key){
+								try{
+									local.cmds[key] = $injector.invoke(injectable);
+								} catch(excp){
+									$log.error(excp);
+								}
+							})
+
+							var slice = [].slice;
+							var service;
+							return service = {
+								'prop': function(name, value){
+									if(arguments.length === 2){
+										local.props[name] = value;
+										return service;
+									} else{
+										return local.props[name];
+									}
+								},
+								'cmd': function(name){
+									if(angular.isFunction(local.cmds[name])){
+										var args = slice.call(arguments, 1);
+										return local.cmds[name].apply(void 0, args);
+									} else{
+										return void 0;
+									}
+								},
+								'service': function(name, method){
+									if(local.services[name]){
+										if(angular.isFunction(local.services[name])){
+											var args = slice.call(arguments, 1);
+											return local.services[name].apply(void 0, args);
+										} else if(arguments.length === 1){
+											return local.services[name];
+										} else{
+											var args = slice.call(arguments, 2);
+											return local.services[name][method].apply(local.services[name], args);
+										}
+									} else{
+										return void 0;
+									}
+
+
+
+
+									if(local.services[name] && local.services[name][method]){
+										var args = slice.call(arguments, 2);
+										return local.services[name][method].apply(local.services[name], args);
+									} else{
+										return void 0;
+									}
+								},
+							};
 						}
 					]
-				});
-			}
-		])
-
-		.provider('utilSearchService', [
-			function(){
-				angular.extend(this, {
-					'$get': [
-						'$location',
-						function($location){
-							var local = {
-								'activated': false,
-								'enabled': false,
-							};
-
-							function updateActive(value){
-								local.activated =	(!!value || !!service.search());
-							}
-
-							var service = {
-								'activated': function(value){
-									if(arguments.length === 0){
-										return local.activated;
-									} else{
-										updateActive(value);
-										return service;
-									}
-								},
-								'search': function(value){
-									if(arguments.length === 0){
-										return $location.search().term || null;
-									} else{
-										if(value === '') value = null;
-										$location.search('term', value).replace();
-										updateActive(false);
-										return service;
-									}
-								},
-								'enabled': function(value){
-									if(arguments.length === 0){
-										return local.enabled;
-									} else{
-										local.enabled = value;
-										return service;
-									}
-								},
-							};
-
-							return service.activated(false).enabled(false);
-						}
-					]
-				});
+				})
 			}
 		])
 
@@ -131,7 +142,7 @@
 				};
 				angular.extend(this, {
 					'setting': function(){
-						if(arugments.lenght === 2){
+						if(arguments.lenght === 2){
 							providerSettings[arguments[0]] = arguments[1];
 						} else if(arguments.length === 1){
 							angular.extend(providerSettings, arguments[0]);
@@ -142,16 +153,25 @@
 						return this;
 					},
 					'$get': [
-						'$q', '$timeout', '$log',
-						function($q, $timeout, $log){
+						'$injector', '$q', '$timeout', '$log',
+						function($injector, $q, $timeout, $log){
 							var service;
+
+							var defaultSetting = angular.extend({}, providerSettings);
+							if(defaultSetting.defaultNotificationService){
+								try{
+									if(providerSettings.defaultNotificationService) defaultSetting.defaultNotificationService = $injector.get(providerSettings.defaultNotificationService);
+								} catch(excp){
+									$log.error(excp);
+								}
+							}
 
 							return service = {
 								'createProgress': function(_settings){
 									var settings = {
 										'delay': providerSettings.defaultProgressDelay,
 										'timeout': providerSettings.defaultProgressTimeout,
-										'notificationService': providerSettings.defaultNotificationService,
+										'notificationService': defaultSetting.defaultNotificationService,
 									};
 									angular.extend(settings, _settings);
 
@@ -184,7 +204,7 @@
 												});
 
 												if(message && settings.notificationService){
-													messageHandler = settings.notificationService.show(message);
+													messageHandler = settings.notificationService.show(message, 0);
 													/*
 													messageHandler = $mdToast.show($mdToast.simple()
 														.textContent(message)
@@ -209,7 +229,7 @@
 									limit = limit || 20;
 									var local = {
 										'logs': [],
-										'notification': notification,
+										'notificationService': defaultSetting.defaultNotificationService,
 									};
 
 									var slice = [].slice;
@@ -225,8 +245,8 @@
 
 											local.logs.splice(limit, local.logs.length);
 
-											if(angular.isFunction(local.notification)){
-												local.notification.apply(void 0, slice.call(arguments, 0));
+											if(local.notification){
+												local.notification.show(message);
 											}
 
 											return service;

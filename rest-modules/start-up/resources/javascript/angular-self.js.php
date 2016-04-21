@@ -11,7 +11,7 @@
 		'ldrvn', 'ldrvn.service', 'ngComponentRouter',
 		'ngMessages', 'ngSanitize', 'ngMaterial',
 		'util', 'oauth2', 'start-up',
-		'app.default',
+		'app.engine',
 	])
 		.value('$routerRootComponent', 'body')
 
@@ -135,7 +135,7 @@
 
 		vm.$mdMedia = vm.$$di.$mdMedia;
 		vm.$mdSidenav = vm.$$di.$mdSidenav;
-		vm.engine = vm.$$di.appEngine;
+		vm.$ae = vm.$$di.appEngine;
 
 		vm.utilService = vm.$$di.utilService;
 		vm.utilSearchService = vm.$$di.utilSearchService;
@@ -173,6 +173,8 @@
 		vm.$$local = {
 			'boxSize': 40,
 		};
+
+		vm.$ae = vm.$$di.appEngine;
 	}
 	angular.extend(StartUpHomeController.prototype, {
 		'$routerOnActivate': function(next, previous){
