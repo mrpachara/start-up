@@ -1,3 +1,4 @@
 [submodule "rest-modules/util/resources/material-design-icons"]
 	path = rest-modules/util/resources/material-design-icons
 	url = https://github.com/google/material-design-icons.git
+	ignore = dirty
