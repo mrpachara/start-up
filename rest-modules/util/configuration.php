@@ -77,8 +77,9 @@
 			['rel' => 'template', 'href' => $GLOBALS['_rest']->getModulePath('html/menu.html'), 'alias' => "menu"],
 			['rel' => 'template', 'href' => $GLOBALS['_rest']->getModulePath('html/menu-item.html'), 'alias' => "menu-item"],
 
-			['rel' => 'template', 'href' => $GLOBALS['_rest']->getModulePath('html/view-action.html'), 'alias' => "view-action.html"],
 			['rel' => 'template', 'href' => $GLOBALS['_rest']->getModulePath('html/list-more-action.html'), 'alias' => "list-more-action.html"],
+			['rel' => 'template', 'href' => $GLOBALS['_rest']->getModulePath('html/list-global-action.html'), 'alias' => "list-global-action.html"],
+			['rel' => 'template', 'href' => $GLOBALS['_rest']->getModulePath('html/view-action.html'), 'alias' => "view-action.html"],
 		],
 	];
 

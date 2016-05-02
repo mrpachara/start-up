@@ -12,6 +12,18 @@
 		'ngComponentRouter', 'ngMaterial',
 		'util', 'util.default',
 	])
+		.run([
+			'$rootScope',
+			'appEngine',
+			function($rootScope, appEngine){
+				appEngine.prop('search-activated', false);
+
+				$rootScope.$on('search-activated', function(ev, value){
+					appEngine.prop('search-activated', value);
+				});
+			}
+		])
+
 		.directive('utilId', [
 			function(){
 				var drtv;
@@ -62,7 +74,8 @@
 					'controller': UtilLinksActionController,
 					'controllerAs': '$action',
 					'bindToController': {
-						'ctrl': '<',
+						'items': '<',
+						'data': '<',
 					},
 				};
 			}
@@ -121,7 +134,7 @@
 		.controller('UtilLogListController', UtilLogListController)
 	;
 
-	UtilLinksActionController.$inject = [];
+	UtilLinksActionController.$inject = ['$q', '$mdDialog', '$location'];
 	function UtilLinksActionController(){
 		var vm = this;
 		var args = arguments;
@@ -131,31 +144,57 @@
 		});
 	}
 	angular.extend(UtilLinksActionController.prototype, {
-		'execute': function(link){
-			var ctrl = this.ctrl;
+		'execute': function(link, data){
+			var vm = this;
 			if(angular.isArray(link.action)){
-				return ctrl.$router.navigate(link.action);
+				var action = [].slice.call(link.action, 0);
+				if(angular.isDefined(data)) action.push(data);
+				return vm.ctrl.$router.navigate(action);
 			} else if(angular.isString(link.action)){
-				return ctrl.changeMode(link.action);
+				return vm.changeMode(link.action);
 			} else{
 				return (((link.confirm) || (link.class && (link.class.split(/\s+/g).indexOf('warn') >= 0)))?
-					ctrl.$$di.$mdDialog.show(ctrl.$$di.$mdDialog.confirm()
+					vm.$$di.$mdDialog.show(vm.$$di.$mdDialog.confirm()
 						.title((link.confirm)? link.confirm : 'Do you want to ' + link.title + '?')
 						.textContent((link.message)? link.message : 'Your action cannot be cancel later')
 						.ok('Yes')
 						.cancel('Cancel')
-					) : ctrl.$$di.$q.when()
+					) : vm.$$di.$q.when()
 				).then(function(){
-					var currentPath = ctrl.$$di.$location.path();
-					return ctrl.links.$load(link.alias).then(function(data){
-						if((ctrl.$$di.$location.path() === currentPath) && data.status && (data.status == 'deleted') && (data.uri === ctrl.uri)) ctrl.back();
+					var currentPath = vm.$$di.$location.path();
+					return vm.ctrl.$ld.$load(link.alias).then(function(data){
+						if((vm.$$di.$location.path() === currentPath) && data.status && (data.status == 'deleted') && (data.uri === vm.ctrl.uri)) vm.ctrl.back();
 					});
 				});
 			}
 		},
+		'view': function(id){
+			var vm = this;
+			var instruction = vm.ctrl.$router.generate(['View', {'id': id}]);
+/*
+console.debug(this.$router, instruction);
+console.debug('toLinkUrl', instruction.toLinkUrl());
+console.debug('toRootUrl', instruction.toRootUrl());
+console.debug('toUrlPath', instruction.toUrlPath());
+console.debug('toUrlQuery', instruction.toUrlQuery());
+			//this.$router.navigate(['View', {'id': id}]);
+			//this.$router.navigateByInstruction(instruction);
+*/
+			return vm.ctrl.$router.navigateByUrl(instruction.toLinkUrl());
+		},
+		'changeMode': function(name){
+			var vm = this;
+
+			return vm.ctrl.$router.navigateByInstruction(vm.ctrl.$router.generate([name, {'id': vm.self.id}]), true);
+			/* if want to change URL but use replaceStage using following code
+			return vm.ctrl.$router.navigate([name, {'id': vm.ctrl.self.id}]).then(function(){
+				vm.$$di.$location.replace();
+			});
+			*/
+		},
 	});
 
-	UtilSearchController.$inject = ['$timeout'];
+	UtilSearchController.$inject = ['$timeout', '$rootScope'];
 	function UtilSearchController(){
 		var vm = this;
 		var args = arguments;
@@ -164,6 +203,10 @@
 			vm.$$di[value] = args[key];
 		});
 		vm.term = null;
+
+		vm.$$di.$rootScope.$on('search-changed', function(ev, value){
+			vm.setTerm(value);
+		});
 	}
 	angular.extend(UtilSearchController.prototype, {
 		'$onInit': function(){
@@ -172,6 +215,12 @@
 		'submit': function(){
 			this.service.search(this.term);
 		},
+		'setTerm': function(value){
+			var vm = this;
+			vm.term = value || null;
+
+			vm.$$di.$rootScope.$emit('search-activated', vm.isActive());
+		},
 		'clear': function(){
 			var vm = this;
 			vm.term = null;
@@ -179,20 +228,20 @@
 		},
 		'restoreTerm': function(){
 			var vm = this;
-			vm.term = vm.service.search();
-			vm.service.activated(false);
+			vm.setTerm(vm.service.search());
 		},
 		'isActive': function(){
-			return this.service.activated();
+			return this.term !== null;
 		},
 		'active': function(ev){
 			var vm = this;
-			vm.service.activated(true);
+			vm.term = '';
 
 			vm.$$di.$timeout(function(){
 				var textElem = angular.element(ev.target).closest('util-search').find('input[name="term"]');
 				textElem.focus();
 			});
+			vm.$$di.$rootScope.$emit('search-activated', true);
 		},
 		'enabled': function(){
 			return this.service.enabled();

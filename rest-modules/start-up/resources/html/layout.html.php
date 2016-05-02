@@ -40,7 +40,7 @@
 						<md-icon md-svg-icon="navigation:ic-menu" alt="navigation menu"></md-icon>
 					</md-button>
 				</div>
-				<h2 ng-show="!app.utilSearchService.activated()">
+				<h2 ng-show="!app.$ae.prop('search-activated')">
 					<span>{{ app.$ae.prop('name') }}</span>
 				</h2>
 				<div layout="row" flex>
@@ -69,7 +69,6 @@
 					</md-menu-content>
 				</md-menu>
 			</header>
-			<!-- ng-class="{'app-st-active': toolbar.appProgress.loading}" -->
 			<md-progress-linear id="app-cp-progress-loading" md-mode="indeterminate" ng-show="toolbar.appProgress.isLoading()" class="md-accent"></md-progress-linear>
 		</md-toolbar>
 		<md-content id="app-ly-container-content" layout="column" flex>

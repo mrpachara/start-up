@@ -4,9 +4,9 @@
 		exit;
 	}
 ?>
-<md-button type="button" ng-repeat="link in $action.ctrl.links.$links('action')"
-	class="{{ (link.class)? 'md-' + link.class : '' }}"
-	ng-click="$action.execute(link)">
-	<md-icon md-svg-icon="{{ link.icon }}"></md-icon>
-	<span>{{ link.title }}</span>
+<md-button type="button" ng-repeat="action in $action.items"
+	ng-class="action.classes"
+	ng-click="action.execute($event)">
+	<md-icon md-svg-icon="{{ action.icon }}"></md-icon>
+	<span>{{ action.title }}</span>
 </md-button>

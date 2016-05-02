@@ -15,14 +15,9 @@
 			</h4>
 		</md-menu-item>
 		<md-menu-divider></md-menu-divider>
-		<md-menu-item>
-			<md-button type="button">
-				<span>action 01</span>
-			</md-button>
-		</md-menu-item>
-		<md-menu-item>
-			<md-button type="button">
-				<span>action 02</span>
+		<md-menu-item ng-repeat="action in $action.items">
+			<md-button type="button" ng-click="action.execute($event, $action.data)">
+				<span>{{ action.title }}</span>
 			</md-button>
 		</md-menu-item>
 	</md-menu-content>

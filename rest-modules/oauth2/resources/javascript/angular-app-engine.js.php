@@ -26,10 +26,8 @@
 
 				appIconProvider.initIcons(utilDefault.iconLinks);
 
-				appEngineProvider.cmds(utilDefault.cmds);
-				appEngineProvider.services(angular.extend(utilDefault.services, {
-					'template': 'startUpTemplate',
-				}));
+				appEngineProvider.cmds(angular.extend({}, utilDefault.cmds));
+				appEngineProvider.services(angular.extend({}, utilDefault.services));
 
 				$httpProvider.interceptors.push('utilDefaultHttpInterceptor');
 			}

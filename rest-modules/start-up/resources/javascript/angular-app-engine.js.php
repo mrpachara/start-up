@@ -21,15 +21,16 @@
 				utilDefault
 			){
 				utilProvider.setting({
-					'defaultNotificationService': 'utilNotificationService',
+					'defaultMessageService': 'utilNotificationService',
 				});
 
 				appIconProvider.initIcons(utilDefault.iconLinks);
 
-				appEngineProvider.cmds(utilDefault.cmds);
-				appEngineProvider.services(angular.extend(utilDefault.services, {
-					'template': 'startUpTemplate',
+				appEngineProvider.cmds(angular.extend({}, utilDefault.cmds));
+				appEngineProvider.services(angular.extend({}, utilDefault.services, {
+					//'template': 'startUpTemplate',
 				}));
+				appEngineProvider.registers(angular.extend({}, utilDefault.registers));
 
 				$httpProvider.interceptors.push('utilDefaultHttpInterceptor');
 			}
@@ -43,14 +44,14 @@
 
 		.factory('startUpTemplate', [
 			'$q',
-			'utilService', 'startUpService',
-			function($q, utilService, startUpService){
+			'utilTemplate', 'startUpService',
+			function($q, utilTemplate, startUpService){
 				function template(alias){
 					if(startUpService.template(alias)) return startUpService.template(alias);
-					return utilService.template(alias);
+					return utilTemplate(alias);
 				}
 
-				template.promise = $q.all(utilService.promise, startUpService.promise).then(function(){
+				template.promise = $q.all(utilTemplate.promise, startUpService.promise).then(function(){
 					return template;
 				});
 

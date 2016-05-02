@@ -5,7 +5,6 @@
 	}
 ?>
 <article class="md-content md-padding">
-	<md-backdrop ng-if="$comp.progress.count()" class="md-sidenav-backdrop md-opaque md-default-theme md-sidenav-backdrop-custom disabled"></md-backdrop>
 	<form name="itemForm" ng-submit="$comp.submit()">
 		<fieldset ng-init="$comp.setForm(itemForm)" ng-disabled="$comp.progress.count()">
 			<div layout="column">
@@ -38,7 +37,7 @@
 					<span>Save</span>
 				</md-button>
 				<span flex></span>
-				<md-button type="button" class="md-accent" ng-click="$comp.changeMode('View')">
+				<md-button type="button" class="md-accent" ng-click="$comp.$ae.cmd('navBack')">
 					<md-icon md-svg-icon="navigation:ic-cancel"></md-icon>
 					<span>Cancel</span>
 				</md-button>

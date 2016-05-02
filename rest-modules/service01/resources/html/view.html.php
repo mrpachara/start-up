@@ -6,9 +6,9 @@
 ?>
 <article class="md-content md-padding">
 	<div layout="row">
-		<util-links-action ctrl="$comp" ng-include="$comp.$ae.service('template', 'view-action.html')"></util-links-action>
+		<util-links-action items="$comp.$actions.global" ng-include="$comp.$ae.service('template', 'view-action.html')"></util-links-action>
 		<div flex></div>
-		<md-button type="button" ng-click="$comp.back($event)">
+		<md-button type="button" ng-click="$comp.$ae.cmd('navBack')">
 			<md-icon md-svg-icon="navigation:ic-chevron-left"></md-icon>
 			<span>Back</span>
 		</md-button>

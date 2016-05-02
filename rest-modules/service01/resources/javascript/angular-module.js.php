@@ -45,7 +45,11 @@
 				return $ldrvn.createService(service01ConfigLoader, {
 					'load': function(params){
 						return this.promise.then(function(service){
-							return service.$$configService.$load(['data01-item', params]);
+							if(angular.isUndefined(params.id)){
+								return service.$$configService.$load('data01-new');
+							} else{
+								return service.$$configService.$load(['data01-item', params]);
+							}
 						});
 					},
 				});
@@ -63,6 +67,7 @@
 			'template': '<ng-outlet></ng-outlet>',
 			'$routeConfig': [
 				{'path': '/', 'name': 'List', 'component': 'service01Data01List', 'useAsDefault': true},
+				{'path': '/new', 'name': 'New', 'component': 'service01Data01New'},
 				{'path': '/:id', 'name': 'View', 'component': 'service01Data01View'},
 				{'path': '/:id/edit', 'name': 'Edit', 'component': 'service01Data01Edit'},
 			],
@@ -92,6 +97,22 @@
 				function(service01Service){
 					return service01Service.promise.then(function(service){
 						return service.template('view.html');
+					});
+				}
+			],
+			'bindings': {
+				'$router': '<',
+			},
+		})
+
+		.component('service01Data01New', {
+			'controller': Service01Data01ItemController,
+			'controllerAs': '$comp',
+			'templateUrl': [
+				'service01Service',
+				function(service01Service){
+					return service01Service.promise.then(function(service){
+						return service.template('edit.html');
 					});
 				}
 			],
@@ -132,7 +153,7 @@
 	;
 
 	Service01Data01ListController.$inject = [
-		'$timeout',
+		'$rootScope', '$timeout',
 		'$mdMedia',
 		'$ldrvn', 'appEngine',
 		'service01Data01ListService',
@@ -160,24 +181,20 @@
 
 			return vm.service.promise.then(function(service){
 				return service.load(next.params).then(function(model){
-					vm.$$di.$timeout(function(){
-						vm.$$di.appEngine.prop('name','Data01');
-					}, 10);
+					vm.$$di.$rootScope.$emit('setup-data', model);
 
 					angular.extend(vm, model);
-					if(vm.links) vm.links = vm.$$di.$ldrvn.create(vm.links);
+					vm.$$di.appEngine.service('router', 'appendActions', vm, next.params);
+
 					return vm;
 				});
 			});
 		},
-		'view': function(id){
-			this.$router.parent.navigate(['View', {'id': id}]);
-		},
 	});
 
 	Service01Data01ItemController.$inject = [
-		'$window', '$timeout', '$location', '$q',
-		'$mdDialog', '$mdMedia',
+		'$window', '$timeout', '$rootScope',
+		'$mdMedia',
 		'$ldrvn', 'util', 'appEngine',
 		'service01Data01ItemService',
 		'appEngine',
@@ -203,15 +220,13 @@
 		'$routerOnActivate': function(next, previous){
 			var vm = this;
 
-			vm.$$local.params = next.params;
 			return vm.service.promise.then(function(service){
-				return service.load(vm.$$local.params).then(function(model){
-					vm.$$di.$timeout(function(){
-						vm.$$di.appEngine.prop('name', 'Data01/' + model.self.id);
-					}, 10);
+				return service.load(next.params).then(function(model){
+					vm.$$di.$rootScope.$emit('setup-data', model);
 
 					angular.extend(vm, model);
-					if(vm.links) vm.links = vm.$$di.$ldrvn.create(vm.links);
+					vm.$$di.appEngine.service('router', 'appendActions', vm, next.params);
+
 					vm.self.$data = angular.toJson(vm.self.data, true);
 					return vm;
 				});
@@ -220,48 +235,22 @@
 		'$routerCanDeactivate': function(){
 			if(this.progress.count()) return false;
 
-			return (this.$$local.formCtrl && this.$$local.formCtrl.$dirty)? this.$$di.$mdDialog.show(
-				this.$$di.$mdDialog.confirm()
-					.title('Do you want to discard change?')
-					.textContent('All your changed data will be lost')
-					.ok('Discard')
-					.cancel('Cancel')
-			).then(
-				function(){
-					return true;
-				},
-				function(){
-					return false;
-				}
-			) : true;
+			return this.$$di.appEngine.service('router', 'canDeactivate', this.$$local.formCtrl);
 		},
 		'setForm': function(formCtrl){
 			this.$$local.formCtrl = formCtrl;
-		},
-		'back': function(ev){
-			return this.$$di.$window.history.back();
-		},
-		'changeMode': function(name){
-			var vm = this;
-
-			return vm.$router.navigateByInstruction(vm.$router.generate([name, {'id': vm.self.id}]), true);
-			/* if want to change URL but use replaceStage using following code
-			return vm.$router.naviage([name, {'id': vm.self.id}]).then(function(){
-				vm.$$di.$location.replace();
-			});
-			*/
 		},
 		'submit': function(){
 			var vm = this;
 
 			vm.self.data = angular.fromJson(vm.self.$data);
 
-			vm.progress.process(vm.links.$send('save', vm.self).then(
+			vm.progress.process(vm.$$di.$ldrvn.create(vm.links).$send('save', vm.self).then(
 				function(){
 					vm.$$local.formCtrl.$setPristine();
 					vm.changeMode('View');
 				}
-			), 'Saving...');
+			), 'Saving ...');
 		},
 	});
 })(this, angular);

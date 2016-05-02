@@ -38,6 +38,7 @@
 				var providerLocal = {
 					'cmds': {},
 					'services': {},
+					'registers': {},
 				};
 
 				angular.extend(this, {
@@ -57,9 +58,15 @@
 							return providerLocal.services;
 						}
 					},
+					'registers': function(_registers){
+						angular.forEach(_registers, function(value, key){
+							if(!angular.isArray(providerLocal.registers[key])) providerLocal.registers[key] = [];
+							providerLocal.registers[key] = providerLocal.registers[key].concat(value);
+						});
+					},
 					'$get': [
-						'$injector', '$log', '$http', '$templateCache',
-						function($injector, $log, $http, $templateCache){
+						'$injector', '$log', '$http', '$templateCache', '$rootScope',
+						function($injector, $log, $http, $templateCache, $rootScope){
 							var local = {
 								'props': {},
 								'cmds': {},
@@ -74,17 +81,8 @@
 								}
 							});
 
-							angular.forEach(providerLocal.cmds, function(injectable, key){
-								try{
-									local.cmds[key] = $injector.invoke(injectable);
-								} catch(excp){
-									$log.error(excp);
-								}
-							})
-
 							var slice = [].slice;
-							var service;
-							return service = {
+							var service = {
 								'prop': function(name, value){
 									if(arguments.length === 2){
 										local.props[name] = value;
@@ -116,9 +114,6 @@
 										return void 0;
 									}
 
-
-
-
 									if(local.services[name] && local.services[name][method]){
 										var args = slice.call(arguments, 2);
 										return local.services[name][method].apply(local.services[name], args);
@@ -127,6 +122,26 @@
 									}
 								},
 							};
+
+							angular.forEach(providerLocal.cmds, function(injectable, key){
+								try{
+									local.cmds[key] = $injector.invoke(injectable, void 0, {'appEngine': service});
+								} catch(excp){
+									$log.error(excp);
+								}
+							});
+
+							angular.forEach(providerLocal.registers, function(injectables, key){
+								angular.forEach(injectables, function(injectable){
+									try{
+										$rootScope.$on(key, $injector.invoke(injectable, void 0, {'appEngine': service}));
+									} catch(excp){
+										$log.error(excp);
+									}
+								});
+							});
+
+							return service;
 						}
 					]
 				})
@@ -138,7 +153,7 @@
 				var providerSettings = {
 					'defaultProgressDelay': 300,
 					'defaultProgressTimeout': 30000,
-					'defaultNotificationService': null,
+					'defaultMessageService': null,
 				};
 				angular.extend(this, {
 					'setting': function(){
@@ -153,14 +168,14 @@
 						return this;
 					},
 					'$get': [
-						'$injector', '$q', '$timeout', '$log',
-						function($injector, $q, $timeout, $log){
+						'$injector', '$q', '$timeout', '$log', '$rootScope',
+						function($injector, $q, $timeout, $log ,$rootScope){
 							var service;
 
 							var defaultSetting = angular.extend({}, providerSettings);
-							if(defaultSetting.defaultNotificationService){
+							if(defaultSetting.defaultMessageService){
 								try{
-									if(providerSettings.defaultNotificationService) defaultSetting.defaultNotificationService = $injector.get(providerSettings.defaultNotificationService);
+									if(providerSettings.defaultMessageService) defaultSetting.defaultMessageService = $injector.get(providerSettings.defaultMessageService);
 								} catch(excp){
 									$log.error(excp);
 								}
@@ -171,7 +186,7 @@
 									var settings = {
 										'delay': providerSettings.defaultProgressDelay,
 										'timeout': providerSettings.defaultProgressTimeout,
-										'notificationService': defaultSetting.defaultNotificationService,
+										'messageService': defaultSetting.defaultMessageService,
 									};
 									angular.extend(settings, _settings);
 
@@ -190,27 +205,19 @@
 													timeoutHandler = null;
 													$log.warn('timeout for:', promise);
 													localProvider.count--;
-													if(message && settings.notificationService) settings.notificationService.hide(messageHandler);
-													//$mdToast.hide(messageHandler);
+													if(message && settings.messageService) settings.messageService.hide(messageHandler);
 												}, settings.timeout);
 
 												promise.finally(function(){
 													if(timeoutHandler !== null){
 														$timeout.cancel(timeoutHandler);
 														localProvider.count--;
-														if(message && settings.notificationService) settings.notificationService.hide(messageHandler);
-														//$mdToast.hide(messageHandler);
+														if(message && settings.messageService) settings.messageService.hide(messageHandler);
 													}
 												});
 
-												if(message && settings.notificationService){
-													messageHandler = settings.notificationService.show(message, 0);
-													/*
-													messageHandler = $mdToast.show($mdToast.simple()
-														.textContent(message)
-														.hideDelay(0)
-													);
-													*/
+												if(message && settings.messageService){
+													messageHandler = settings.messageService.show(message, 0);
 												}
 											}, settings.delay);
 
@@ -229,7 +236,6 @@
 									limit = limit || 20;
 									var local = {
 										'logs': [],
-										'notificationService': defaultSetting.defaultNotificationService,
 									};
 
 									var slice = [].slice;
@@ -245,9 +251,7 @@
 
 											local.logs.splice(limit, local.logs.length);
 
-											if(local.notification){
-												local.notification.show(message);
-											}
+											$rootScope.$emit('notification-show', message);
 
 											return service;
 										},
