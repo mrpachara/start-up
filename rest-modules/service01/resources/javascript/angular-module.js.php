@@ -7,7 +7,7 @@
 (function(GLOBALOBJECT, angular){
 	'use strict';
 
-	angular.module(<?= json_encode($config->linkProp('angular-module', 'module-id')) ?>, [
+	var module = angular.module(<?= json_encode($config->linkProp('angular-module', 'module-id')) ?>, [
 		'ldrvn', 'ldrvn.service', 'ngComponentRouter',
 		'util',
 		'app.engine',
@@ -18,11 +18,26 @@
 		])
 
 		.run([
-			'$rootRouter',
-			function($rootRouter){
+			'$rootRouter', 'service01ConfigLoader',
+			function($rootRouter, service01ConfigLoader){
+				/*
 				$rootRouter.config([
-					{'path': '/service01/...', 'name': 'Service01', 'component': 'service01'},
+					{'path': '/service01/...', 'name': 'Service01', 'component': 'service01Component'},
 				]);
+				*/
+
+				service01ConfigLoader.then(function(configLoader){
+					//configLoader.component().createComponents(module);
+
+					$rootRouter.config(configLoader.router().routeConfig(void 0, module.name));
+				});
+			}
+		])
+
+		.factory('service01ConfigLoader', [
+			'$ldrvn',
+			function($ldrvn){
+				return $ldrvn.loadConfig(<?= json_encode($GLOBALS['_rest']->getConfigUri()) ?>);
 			}
 		])
 
@@ -55,25 +70,24 @@
 				});
 			}
 		])
-
-		.component('service01', {
+		.component('service01Component', {
 			'template': '<ng-outlet></ng-outlet>',
 			'$routeConfig': [
-				{'path': '/data01/...', 'name': 'Data01', 'component': 'service01Data01'},
+				{'path': '/data01/...', 'name': 'Data01', 'component': 'service01Data01Component'},
 			],
 		})
 
-		.component('service01Data01', {
+		.component('service01Data01Component', {
 			'template': '<ng-outlet></ng-outlet>',
 			'$routeConfig': [
-				{'path': '/', 'name': 'List', 'component': 'service01Data01List', 'useAsDefault': true},
-				{'path': '/new', 'name': 'New', 'component': 'service01Data01New'},
-				{'path': '/:id', 'name': 'View', 'component': 'service01Data01View'},
-				{'path': '/:id/edit', 'name': 'Edit', 'component': 'service01Data01Edit'},
+				{'path': '/', 'name': 'List', 'component': 'service01Data01ListComponent', 'useAsDefault': true},
+				{'path': '/new', 'name': 'New', 'component': 'service01Data01NewComponent'},
+				{'path': '/:id', 'name': 'View', 'component': 'service01Data01ViewComponent'},
+				{'path': '/:id/edit', 'name': 'Edit', 'component': 'service01Data01EditComponent'},
 			],
 		})
 
-		.component('service01Data01List', {
+		.component('service01Data01ListComponent', {
 			'controller': Service01Data01ListController,
 			'controllerAs': '$comp',
 			'templateUrl': [
@@ -89,7 +103,7 @@
 			},
 		})
 
-		.component('service01Data01View', {
+		.component('service01Data01ViewComponent', {
 			'controller': Service01Data01ItemController,
 			'controllerAs': '$comp',
 			'templateUrl': [
@@ -105,7 +119,7 @@
 			},
 		})
 
-		.component('service01Data01New', {
+		.component('service01Data01NewComponent', {
 			'controller': Service01Data01ItemController,
 			'controllerAs': '$comp',
 			'templateUrl': [
@@ -121,7 +135,7 @@
 			},
 		})
 
-		.component('service01Data01Edit', {
+		.component('service01Data01EditComponent', {
 			'controller': Service01Data01ItemController,
 			'controllerAs': '$comp',
 			'templateUrl': [
@@ -136,13 +150,6 @@
 				'$router': '<',
 			},
 		})
-
-		.factory('service01ConfigLoader', [
-			'$ldrvn',
-			function($ldrvn){
-				return $ldrvn.loadConfig(<?= json_encode($GLOBALS['_rest']->getConfigUri()) ?>);
-			}
-		])
 
 		.factory('service01Service', [
 			'$ldrvn', 'service01ConfigLoader',

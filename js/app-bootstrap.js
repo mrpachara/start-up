@@ -42,7 +42,7 @@
 					$log.info('loaded modules:', moduleIds);
 					var document = $document[0];
 					angular.element(document).ready(function(){
-						angular.bootstrap(document, moduleIds, {strictDi: true});
+						angular.bootstrap(document, moduleIds, {'strictDi': true});
 					});
 				},
 				function(error){

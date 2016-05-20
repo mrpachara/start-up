@@ -94,10 +94,14 @@
 					}
 				],
 				'navBack': [
-					'$window',
-					function($window){
-						return function(ev){
-							return $window.history.back();
+					'$window', '$q',
+					function($window, $q){
+						return function(ev, confirm){
+							return (confirm || $q.when({}))
+								.then(function(){
+									return $window.history.back();
+								})
+							;
 						};
 					}
 				],
@@ -118,17 +122,121 @@
 						};
 					}]
 				],
-				/*
-				'navigation-sub' [
-					[function(){
-						return function(router, sub, data){
-
-						};
-					}],
-				],
-				*/
 			},
 		})
+
+		.config([
+			'$ldrvnProvider',
+			function($ldrvnProvider){
+				function normName(prefix, name){
+					prefix = prefix || '';
+					var nName = (prefix + '-' + (name || '')).replace(/([\:\-\_]+(.))/g, function(_, separator, letter, offset){return offset ? letter.toUpperCase() : letter;});
+
+					return nName;
+				}
+
+				$ldrvnProvider.appendEngine({
+					'router': [
+						'$ldrvn',
+						function($ldrvn){
+							function RouterEngine(){
+								$ldrvn.CLASS.apply(this, arguments);
+							}
+
+							angular.extend($ldrvn.extendLdrvn(RouterEngine).prototype, {
+								'routeConfig': function(uri, prefix){
+									var rConfigs = [];
+
+									angular.forEach(this.$links(), function(link){
+										if(link.for === uri){
+											var rConfig = angular.extend({}, link);
+											rConfig.component = normName(prefix, link.component);
+
+											rConfigs.push(rConfig);
+										}
+									});
+console.debug('RouteConfigs',uri,prefix, rConfigs);
+									return rConfigs;
+								},
+								'getNames': function(uri){
+									return [(this.$link(uri) || {}).name];
+								},
+								'getFullNames': function(uri){
+
+								},
+							});
+
+							return function(){
+								if(angular.isDefined(this.$$router)) return this.$$router;
+
+								var self = this;
+								return (this.$$router = new RouterEngine(function(){
+									return self.$links('router');
+								}));
+							};
+						}
+					],
+					'component': [
+						'$ldrvn',
+						function($ldrvn){
+							function ComponentEngine(){
+								$ldrvn.CLASS.apply(this, arguments);
+							}
+
+							angular.extend($ldrvn.extendLdrvn(ComponentEngine).prototype, {
+								'createComponents': function(module){
+									var self = this;
+									angular.forEach(self.$links(), function(link){
+										var comp = {
+											'bindings': {
+												'$router': '<',
+											},
+										};
+
+										if(link.template && link.service){
+											comp.templateUrl = [
+												link.service,
+												function(service){
+													return service.promise.then(function(service){
+														return service.template(link.template);
+													});
+												}
+											];
+											angular.extend(comp.bindings, {
+												'service': link.service,
+											});
+										} else{
+											comp.tempate = '<ng-outlet></ng-outlet>';
+										}
+
+										if(link.controller){
+											comp.controller = link.controller;
+											comp.controllerAs = '$comp';
+										}
+
+										comp.$routeConfig = self.$self.router().routeConfig(link.alias, module.name);
+console.debug(normName(module.name, link.alias), comp);
+										module.component(normName(module.name, link.alias), comp);
+									});
+								},
+							});
+
+							return function(){
+								if(angular.isDefined(this.$$component)) return this.$$component;
+
+								var self = this;
+								self.$$component = new ComponentEngine(function(){
+									return self.$links('component');
+								});
+								self.$$component.$self = self;
+
+								return self.$$component;
+							};
+						}
+					],
+				});
+			}
+		])
 
 		.run([
 			'utilService',
@@ -421,6 +529,9 @@
 				};
 			}
 		])
+
+		.controller('DefaultComponentListController', DefaultComponentListController)
+		.controller('DefaultComponentItemController', DefaultComponentItemController)
 	;
 
 	Util$mdIconDecorator.$inject = ['$delegate'];
@@ -437,4 +548,97 @@
 			return $delegate.apply(undefined, args);
 		}
 	}
+
+	DefaultComponentListController.$inject = ['$injector', '$mdMedia', 'appEngine'];
+	function DefaultComponentListController(){
+		var vm = this;
+		var args = arguments;
+		vm.$$di = {};
+		angular.forEach(DefaultComponentListController.$inject, function(value, key){
+			vm.$$di[value] = args[key];
+		});
+
+		vm.$ae = vm.$$di.appEngine;
+		vm.$mdMedia = vm.$$di.$mdMedia;
+	}
+	angular.extend(DefaultComponentListController.prototype, {
+		'$onInit': function(){
+			var vm = this;
+			try{
+				vm.service = vm.$$di.$injector.get(vm.service);
+			} catch(excp){}
+console.debug('DefaultComponentListController', vm.service);
+		},
+		'$routerOnActivate': function(next, previous){
+			var vm = this;
+
+			return vm.service.promise.then(function(service){
+				return service.load(next.params).then(function(model){
+					vm.$$di.$rootScope.$emit('setup-data', model);
+
+					angular.extend(vm, model);
+					vm.$$di.appEngine.service('router', 'appendActions', vm, next.params);
+
+					return vm;
+				});
+			});
+		},
+	});
+
+	DefaultComponentItemController.$inject = ['$injector', '$mdMedia', 'appEngine'];
+	function DefaultComponentItemController(){
+		var vm = this;
+		var args = arguments;
+		vm.$$di = {};
+		angular.forEach(DefaultComponentItemController.$inject, function(value, key){
+			vm.$$di[value] = args[key];
+		});
+
+		vm.$ae = vm.$$di.appEngine;
+		vm.$mdMedia = vm.$$di.$mdMedia;
+	}
+	angular.extend(DefaultComponentItemController.prototype, {
+		'$onInit': function(){
+			var vm = this;
+			try{
+				vm.service = vm.$$di.$injector.get(vm.service);
+			} catch(excp){}
+console.debug('DefaultComponentItemController', vm.service);
+		},
+		'$routerOnActivate': function(next, previous){
+			var vm = this;
+
+			return vm.service.promise.then(function(service){
+				return service.load(next.params).then(function(model){
+					vm.$$di.$rootScope.$emit('setup-data', model);
+
+					angular.extend(vm, model);
+					vm.$$di.appEngine.service('router', 'appendActions', vm, next.params);
+
+					vm.self.$data = angular.toJson(vm.self.data, true);
+					return vm;
+				});
+			});
+		},
+		'$routerCanDeactivate': function(){
+			if(this.progress.count()) return false;
+
+			return this.$$di.appEngine.service('router', 'canDeactivate', this.$$local.formCtrl);
+		},
+		'setForm': function(formCtrl){
+			this.$$local.formCtrl = formCtrl;
+		},
+		'submit': function(){
+			var vm = this;
+
+			vm.self.data = angular.fromJson(vm.self.$data);
+
+			vm.progress.process(vm.$$di.$ldrvn.create(vm.links).$send('save', vm.self).then(
+				function(){
+					vm.$$local.formCtrl.$setPristine();
+					vm.changeMode('View');
+				}
+			), 'Saving ...');
+		},
+	});
 })(this, angular);
